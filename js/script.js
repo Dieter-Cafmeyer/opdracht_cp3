@@ -165,6 +165,7 @@
 	      this.load.image('startButton', 'assets/start-button.png');
 	      this.load.image('ground', 'assets/ground.png');
 	      this.load.image('title', 'assets/title.png');
+	      this.load.image('kamikaze_dead', 'assets/kamikaze_dead.png');
 	    }
 	  }, {
 	    key: 'create',
@@ -294,12 +295,7 @@
 	  }, {
 	    key: 'update',
 	    value: function update() {
-	      this.game.physics.arcade.collide(this.kamikaze, this.ground, this.kamikazeDestroy, null, this);
-	    }
-	  }, {
-	    key: 'kamikazeDestroy',
-	    value: function kamikazeDestroy() {
-	      this.kamikaze.destroy();
+	      this.game.physics.arcade.collide(this.kamikaze, this.ground, this.kamikaze.kamikazeDestroy, null, this);
 	    }
 
 	    // groundHitHandler() {
@@ -329,7 +325,7 @@
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 	Object.defineProperty(exports, "__esModule", {
-	   value: true
+	  value: true
 	});
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -339,31 +335,42 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var Kamikaze = (function (_Phaser$Sprite) {
-	   _inherits(Kamikaze, _Phaser$Sprite);
+	  _inherits(Kamikaze, _Phaser$Sprite);
 
-	   function Kamikaze(game, x, y, frame) {
-	      _classCallCheck(this, Kamikaze);
+	  function Kamikaze(game, x, y, frame) {
+	    _classCallCheck(this, Kamikaze);
 
-	      var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Kamikaze).call(this, game, x, y, 'kamikaze', frame));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Kamikaze).call(this, game, x, y, 'kamikaze', frame));
 
-	      _this.anchor.setTo(0.5, 0.5);
-	      _this.animations.add('flap');
-	      _this.animations.play('flap', 5, true);
+	    _this.anchor.setTo(0.5, 0.5);
+	    _this.animations.add('flap');
+	    _this.animations.play('flap', 5, true);
 
-	      _this.game.physics.arcade.enableBody(_this);
-	      return _this;
-	   }
+	    _this.game.physics.arcade.enableBody(_this);
+	    return _this;
+	  }
 
-	   _createClass(Kamikaze, [{
-	      key: 'update',
-	      value: function update() {
-	         this.body.velocity.x = -200;
-	         this.body.velocity.y = 150;
-	         this.angle = -20;
-	      }
-	   }]);
+	  _createClass(Kamikaze, [{
+	    key: 'update',
+	    value: function update() {
+	      this.body.velocity.x = -200;
+	      this.body.velocity.y = 150;
+	      this.angle = -20;
+	    }
+	  }, {
+	    key: 'kamikazeDestroy',
+	    value: function kamikazeDestroy() {
+	      var x = this.kamikaze.x - 40;
+	      var y = this.kamikaze.y - 20;
+	      this.kamikaze.destroy();
 
-	   return Kamikaze;
+	      this.kamikaze_dead = this.game.add.sprite(x, y, 'kamikaze_dead');
+	      this.game.physics.arcade.enableBody(this.kamikaze_dead);
+	      this.kamikaze_dead.body.velocity.x = -200;
+	    }
+	  }]);
+
+	  return Kamikaze;
 	})(Phaser.Sprite);
 
 	exports.default = Kamikaze;

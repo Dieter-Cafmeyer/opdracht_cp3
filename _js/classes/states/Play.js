@@ -18,11 +18,7 @@ export default class Play extends Phaser.State {
     this.game.add.existing(this.kamikaze);
   }
   update() {
-    this.game.physics.arcade.collide(this.kamikaze, this.ground, this.kamikazeDestroy, null, this);
-  }
-
-  kamikazeDestroy() {
-    this.kamikaze.destroy();
+    this.game.physics.arcade.collide(this.kamikaze, this.ground, this.kamikaze.kamikazeDestroy, null, this);
   }
   
   // groundHitHandler() {
