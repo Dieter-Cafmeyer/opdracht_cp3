@@ -67,7 +67,7 @@
 	var game = undefined;
 
 	var init = function init() {
-	  game = new Phaser.Game(288, 505, Phaser.AUTO);
+	  game = new Phaser.Game(560, 272, Phaser.AUTO);
 	  game.state.add('Boot', _Boot2.default, false);
 	  game.state.add('Preload', _Preload2.default, false);
 	  game.state.add('Menu', _Menu2.default, false);
@@ -150,7 +150,16 @@
 
 	  _createClass(Preload, [{
 	    key: 'preload',
-	    value: function preload() {}
+	    value: function preload() {
+
+	      this.asset = this.add.sprite(this.game.width / 2, this.game.height / 2, 'preloader');
+	      this.asset.anchor.setTo(0.5, 0.5);
+
+	      this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
+
+	      this.load.spritesheet('background', 'assets/background.png', 560, 272, 8);
+	      this.load.image('startButton', 'assets/start-button.png');
+	    }
 	  }, {
 	    key: 'create',
 	    value: function create() {}
@@ -198,7 +207,17 @@
 
 	  _createClass(Menu, [{
 	    key: 'create',
-	    value: function create() {}
+	    value: function create() {
+	      //background instellen van de start menu + de animatie hiervan
+	      this.background = this.game.add.sprite(0, 0, 'background');
+	      this.background.animations.add('move');
+	      this.background.animations.play('move', 12, true);
+
+	      //this.background = this.game.add.sprite(0, 0, 'background');
+
+	      this.startButton = this.game.add.button(this.game.width / 2, this.game.height / 2, 'startButton', this.startClick, this);
+	      this.startButton.anchor.setTo(0.5, 0.5);
+	    }
 	  }, {
 	    key: 'startClick',
 	    value: function startClick() {
@@ -215,7 +234,7 @@
 /* 4 */
 /***/ function(module, exports) {
 
-	"use strict";
+	'use strict';
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -241,10 +260,12 @@
 	  }
 
 	  _createClass(Play, [{
-	    key: "create",
-	    value: function create() {}
+	    key: 'create',
+	    value: function create() {
+	      console.log('Play');
+	    }
 	  }, {
-	    key: "update",
+	    key: 'update',
 	    value: function update() {}
 
 	    // groundHitHandler() {
@@ -253,7 +274,7 @@
 	    // }
 
 	  }, {
-	    key: "shutdown",
+	    key: 'shutdown',
 	    value: function shutdown() {
 	      // this.bird.destroy();
 
