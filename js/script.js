@@ -159,6 +159,8 @@
 
 	      this.load.spritesheet('background', 'assets/background.png', 560, 272, 8);
 	      this.load.image('startButton', 'assets/start-button.png');
+	      this.load.image('ground', 'assets/ground.png');
+	      this.load.image('title', 'assets/title.png');
 	    }
 	  }, {
 	    key: 'create',
@@ -213,9 +215,10 @@
 	      this.background.animations.add('move');
 	      this.background.animations.play('move', 12, true);
 
-	      //this.background = this.game.add.sprite(0, 0, 'background');
+	      this.title = this.game.add.sprite(this.game.width / 2, 80, 'title');
+	      this.title.anchor.setTo(0.5, 0.5);
 
-	      this.startButton = this.game.add.button(this.game.width / 2, this.game.height / 2, 'startButton', this.startClick, this);
+	      this.startButton = this.game.add.button(this.game.width / 2, this.game.height / 2 + 50, 'startButton', this.startClick, this);
 	      this.startButton.anchor.setTo(0.5, 0.5);
 	    }
 	  }, {
@@ -263,6 +266,14 @@
 	    key: 'create',
 	    value: function create() {
 	      console.log('Play');
+	      //background instellen van de start menu + de animatie hiervan
+	      this.background = this.game.add.sprite(0, 0, 'background');
+	      this.background.animations.add('move');
+	      this.background.animations.play('move', 12, true);
+
+	      //ground plaatsen en laten bewegen
+	      this.ground = this.game.add.tileSprite(0, 230, 560, 44, 'ground');
+	      this.ground.autoScroll(-200, 0);
 	    }
 	  }, {
 	    key: 'update',
