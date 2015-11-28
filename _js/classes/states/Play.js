@@ -1,4 +1,5 @@
-// import Bird from '../objects/Bird';
+import Ground from '../objects/Ground.js';
+import Kamikaze from '../objects/Kamikaze.js';
 
 export default class Play extends Phaser.State {
   create() {
@@ -9,12 +10,19 @@ export default class Play extends Phaser.State {
     this.background.animations.play('move', 12, true);
 
     //ground plaatsen en laten bewegen
-    this.ground = this.game.add.tileSprite(0, 230, 560, 44, 'ground');
-    this.ground.autoScroll(-200, 0);
+    this.ground = new Ground(this.game, 0, 230, 560, 44);
+    this.game.add.existing(this.ground);
 
+    //testje om kamikaze op het scherm te laten komen
+    this.kamikaze = new Kamikaze(this.game, 560, 50);
+    this.game.add.existing(this.kamikaze);
   }
   update() {
-    
+    this.game.physics.arcade.collide(this.kamikaze, this.ground, this.kamikazeDestroy, null, this);
+  }
+
+  kamikazeDestroy() {
+    this.kamikaze.destroy();
   }
   
   // groundHitHandler() {

@@ -157,7 +157,11 @@
 
 	      this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
 
+	      //Inladen van de spritesheets
 	      this.load.spritesheet('background', 'assets/background.png', 560, 272, 8);
+	      this.load.spritesheet('kamikaze', 'assets/kamikaze.png', 55, 33, 2);
+
+	      //Inladen van de images
 	      this.load.image('startButton', 'assets/start-button.png');
 	      this.load.image('ground', 'assets/ground.png');
 	      this.load.image('title', 'assets/title.png');
@@ -235,7 +239,7 @@
 
 /***/ },
 /* 4 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -245,13 +249,21 @@
 	  value: true
 	});
 
+	var _Ground = __webpack_require__(6);
+
+	var _Ground2 = _interopRequireDefault(_Ground);
+
+	var _Kamikaze = __webpack_require__(5);
+
+	var _Kamikaze2 = _interopRequireDefault(_Kamikaze);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	// import Bird from '../objects/Bird';
 
 	var Play = (function (_Phaser$State) {
 	  _inherits(Play, _Phaser$State);
@@ -272,12 +284,23 @@
 	      this.background.animations.play('move', 12, true);
 
 	      //ground plaatsen en laten bewegen
-	      this.ground = this.game.add.tileSprite(0, 230, 560, 44, 'ground');
-	      this.ground.autoScroll(-200, 0);
+	      this.ground = new _Ground2.default(this.game, 0, 230, 560, 44);
+	      this.game.add.existing(this.ground);
+
+	      //testje om kamikaze op het scherm te laten komen
+	      this.kamikaze = new _Kamikaze2.default(this.game, 560, 50);
+	      this.game.add.existing(this.kamikaze);
 	    }
 	  }, {
 	    key: 'update',
-	    value: function update() {}
+	    value: function update() {
+	      this.game.physics.arcade.collide(this.kamikaze, this.ground, this.kamikazeDestroy, null, this);
+	    }
+	  }, {
+	    key: 'kamikazeDestroy',
+	    value: function kamikazeDestroy() {
+	      this.kamikaze.destroy();
+	    }
 
 	    // groundHitHandler() {
 	    //   this.groundHitSound.play();
@@ -296,6 +319,92 @@
 	})(Phaser.State);
 
 	exports.default = Play;
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	   value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Kamikaze = (function (_Phaser$Sprite) {
+	   _inherits(Kamikaze, _Phaser$Sprite);
+
+	   function Kamikaze(game, x, y, frame) {
+	      _classCallCheck(this, Kamikaze);
+
+	      var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Kamikaze).call(this, game, x, y, 'kamikaze', frame));
+
+	      _this.anchor.setTo(0.5, 0.5);
+	      _this.animations.add('flap');
+	      _this.animations.play('flap', 5, true);
+
+	      _this.game.physics.arcade.enableBody(_this);
+	      return _this;
+	   }
+
+	   _createClass(Kamikaze, [{
+	      key: 'update',
+	      value: function update() {
+	         this.body.velocity.x = -200;
+	         this.body.velocity.y = 150;
+	         this.angle = -20;
+	      }
+	   }]);
+
+	   return Kamikaze;
+	})(Phaser.Sprite);
+
+	exports.default = Kamikaze;
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Ground = (function (_Phaser$TileSprite) {
+	  _inherits(Ground, _Phaser$TileSprite);
+
+	  function Ground(game, x, y, width, height) {
+	    _classCallCheck(this, Ground);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Ground).call(this, game, x, y, width, height, 'ground'));
+
+	    _this.autoScroll(-200, 0);
+
+	    _this.game.physics.arcade.enableBody(_this);
+
+	    _this.body.allowGravity = false;
+	    _this.body.immovable = true;
+	    return _this;
+	  }
+
+	  return Ground;
+	})(Phaser.TileSprite);
+
+	exports.default = Ground;
 
 /***/ }
 /******/ ]);
