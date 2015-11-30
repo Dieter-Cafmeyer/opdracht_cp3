@@ -17,7 +17,7 @@ export default class Play extends Phaser.State {
     this.background.animations.play('move', 12, true);
 
     //ground plaatsen en laten bewegen
-    this.ground = new Ground(this.game, 0, 230, 560, 44);
+    this.ground = new Ground(this.game, 0, 245, 560, 44);
     this.game.add.existing(this.ground);
 
     //testje om kamikaze op het scherm te laten komen

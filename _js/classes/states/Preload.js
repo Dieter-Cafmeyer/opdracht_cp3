@@ -8,16 +8,17 @@ export default class Preload extends Phaser.State {
 
     //Inladen van de spritesheets
     this.load.spritesheet('background', 'assets/background.png', 560, 272, 8);
-	this.load.spritesheet('kamikaze', 'assets/kamikaze.png', 55, 33, 2);
-
-	//Inladen van de images
-    this.load.image('startButton', 'assets/start-button.png');
-    this.load.image('ground', 'assets/ground.png');
-    this.load.image('title', 'assets/title.png');
-    this.load.image('kamikaze_dead', 'assets/kamikaze_dead.png');
+	  this.load.spritesheet('kamikaze', 'assets/kamikaze.png', 55, 33, 2);
     this.load.spritesheet('player', 'assets/player.png', 55, 66);
     this.load.spritesheet('egg', 'assets/egg.png', 30,30);
     this.load.spritesheet('dropper', 'assets/bird2.png', 36,50);
+
+	//Inladen van de images
+    this.load.image('startButton', 'assets/start-button.png');
+    this.load.image('ground', 'assets/grond.png');
+    this.load.image('title', 'assets/title.png');
+    this.load.image('kamikaze_dead', 'assets/kamikaze_dead.png');
+
   }
   create() {
   }
