@@ -50,7 +50,7 @@ export default class Play extends Phaser.State {
           {
             this.player.body.velocity.x = -150;
           }
-        else if (this.player.body.position.x < 150 && cursors.right.isDown)
+        else if (this.player.body.position.x < 300 && cursors.right.isDown)
           {
             this.player.body.velocity.x = 150;
           }

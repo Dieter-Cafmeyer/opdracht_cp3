@@ -169,6 +169,8 @@
 	      this.load.image('ground', 'assets/grond.png');
 	      this.load.image('title', 'assets/title.png');
 	      this.load.image('kamikaze_dead', 'assets/kamikaze_dead.png');
+
+	      this.load.script('filter', 'https://cdn.rawgit.com/photonstorm/phaser/master/filters/Plasma.js');
 	    }
 	  }, {
 	    key: 'create',
@@ -336,7 +338,7 @@
 	      if (!cursors.down.isDown) {
 	        if (this.player.body.position.x > 0 && cursors.left.isDown) {
 	          this.player.body.velocity.x = -150;
-	        } else if (this.player.body.position.x < 150 && cursors.right.isDown) {
+	        } else if (this.player.body.position.x < 300 && cursors.right.isDown) {
 	          this.player.body.velocity.x = 150;
 	        }
 	      };
@@ -492,6 +494,8 @@
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Player).call(this, game, x, y, 'player', frame));
 
+	    _this.powered = false;
+
 	    _this.anchor.setTo(0.5, 0.5);
 	    _this.animations.add('run', [1, 2, 3, 4]);
 
@@ -499,12 +503,19 @@
 	    _this.body.gravity.y = 400;
 
 	    _this.ducking = false;
+
+	    _this.game.time.events.add(Phaser.Timer.SECOND, _this.powerUp, _this);
 	    return _this;
 	  }
 
 	  _createClass(Player, [{
 	    key: 'update',
 	    value: function update() {
+
+	      if (this.powered) {
+	        this.powerHandler();
+	      }
+
 	      if (!this.body.touching.down) {
 	        this.frame = 4;
 	      } else {
@@ -512,6 +523,29 @@
 	      }
 	      this.ducking = false;
 	    }
+
+	    //powerhandling
+
+	  }, {
+	    key: 'powerHandler',
+	    value: function powerHandler() {
+	      var color = '0x' + (Math.random() * 0xFFFFFF << 0).toString(16);
+	      this.tint = color;
+	    }
+	  }, {
+	    key: 'powerUp',
+	    value: function powerUp() {
+	      this.powered = true;
+	      this.game.time.events.loop(Phaser.Timer.SECOND * 5, this.powerDown, this);
+	    }
+	  }, {
+	    key: 'powerDown',
+	    value: function powerDown() {
+	      this.powered = false;
+	      this.tint = 0xFFFFFF;
+	    }
+	    //----------
+
 	  }, {
 	    key: 'jump',
 	    value: function jump() {
