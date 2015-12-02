@@ -25,12 +25,7 @@ export default class Egg extends Phaser.Sprite {
     var x = this.egg.x;
     var y = this.egg.y;
 
-
-
-    
     this.egg.animations.play('break', 10, false,true);
-
-
 
     // this.egg.destroy();
 
@@ -40,8 +35,5 @@ export default class Egg extends Phaser.Sprite {
 
     // this.game.physics.arcade.enableBody(this.egg_dead);
     // this.egg_dead.body.velocity.x=-200;
-
-    
-    console.log('boem');
   }
 }

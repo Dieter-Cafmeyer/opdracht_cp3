@@ -8,8 +8,6 @@ let cursors;
 
 export default class Play extends Phaser.State {
   create() {
-    console.log('Play');
-    
     cursors = this.game.input.keyboard.createCursorKeys();
     //background instellen van de start menu + de animatie hiervan
     this.background = this.game.add.sprite(0,0,'background');
@@ -68,7 +66,6 @@ export default class Play extends Phaser.State {
     {
         this.player.duck();
     }
-    console.log(this.player.ducking);
   }
 
   

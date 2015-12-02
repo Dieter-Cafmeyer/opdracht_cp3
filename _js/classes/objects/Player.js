@@ -4,7 +4,6 @@ export default class Player extends Phaser.Sprite {
 
     this.anchor.setTo(0.5, 0.5);
     this.animations.add('run', [ 1, 2, 3,4]);
-    this.animations.play('run', 6, true);
 
     this.game.physics.arcade.enableBody(this);
     this.body.gravity.y = 400;
@@ -15,7 +14,7 @@ export default class Player extends Phaser.Sprite {
     if (!this.body.touching.down) {
       this.frame=4;
     } else{
-      this.animations.play('run', 6, true);
+      this.animations.play('run', 9, true);
     }
     this.ducking=false;
   }

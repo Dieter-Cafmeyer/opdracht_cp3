@@ -295,8 +295,6 @@
 	  _createClass(Play, [{
 	    key: 'create',
 	    value: function create() {
-	      console.log('Play');
-
 	      cursors = this.game.input.keyboard.createCursorKeys();
 	      //background instellen van de start menu + de animatie hiervan
 	      this.background = this.game.add.sprite(0, 0, 'background');
@@ -351,7 +349,6 @@
 	      if (cursors.down.isDown && this.player.body.touching.down) {
 	        this.player.duck();
 	      }
-	      console.log(this.player.ducking);
 	    }
 
 	    // groundHitHandler() {
@@ -497,7 +494,6 @@
 
 	    _this.anchor.setTo(0.5, 0.5);
 	    _this.animations.add('run', [1, 2, 3, 4]);
-	    _this.animations.play('run', 6, true);
 
 	    _this.game.physics.arcade.enableBody(_this);
 	    _this.body.gravity.y = 400;
@@ -512,7 +508,7 @@
 	      if (!this.body.touching.down) {
 	        this.frame = 4;
 	      } else {
-	        this.animations.play('run', 6, true);
+	        this.animations.play('run', 9, true);
 	      }
 	      this.ducking = false;
 	    }
@@ -601,8 +597,6 @@
 
 	      // this.game.physics.arcade.enableBody(this.egg_dead);
 	      // this.egg_dead.body.velocity.x=-200;
-
-	      console.log('boem');
 	    }
 	  }]);
 
