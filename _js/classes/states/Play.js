@@ -9,6 +9,7 @@ let cursors;
 export default class Play extends Phaser.State {
   create() {
     cursors = this.game.input.keyboard.createCursorKeys();
+    this.score = 1;
     //background instellen van de start menu + de animatie hiervan
     this.background = this.game.add.sprite(0,0,'background');
     this.background.animations.add('move');
@@ -35,14 +36,17 @@ export default class Play extends Phaser.State {
     this.game.add.existing(this.dropper);
 
     //dropper test jumpobstakel
-    this.dropper = new Dropper(this.game, this.game.width+400,185);
-    this.game.add.existing(this.dropper);
+    this.dropperLow = new Dropper(this.game, this.game.width+400,200);
+    this.game.add.existing(this.dropperLow);
 
   }
   update() {
     this.game.physics.arcade.collide(this.kamikaze, this.ground, this.kamikaze.kamikazeDestroy, null, this);
     this.game.physics.arcade.collide(this.player, this.ground);
     this.game.physics.arcade.collide(this.ground, this.egg, this.egg.break, null, this);
+    this.game.physics.arcade.collide(this.player, this.dropperLow, this.playerDropperHitHandler, null, this);
+
+    this.scoreHandler();
 
     this.player.body.velocity.x=0;
     if (!cursors.down.isDown) {
@@ -68,6 +72,14 @@ export default class Play extends Phaser.State {
     }
   }
 
+  scoreHandler(){
+  
+  }
+
+  playerDropperHitHandler(){
+    this.dropperLow.kill();
+    this.player.powerUp();
+  }
   
   // groundHitHandler() {
   //   this.groundHitSound.play();

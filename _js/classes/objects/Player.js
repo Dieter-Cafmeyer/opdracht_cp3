@@ -12,7 +12,7 @@ export default class Player extends Phaser.Sprite {
 
     this.ducking = false;
 
-    this.game.time.events.add(Phaser.Timer.SECOND, this.powerUp, this);
+    //this.game.time.events.add(Phaser.Timer.SECOND, this.powerUp, this);
   }
   update() {
 
@@ -56,6 +56,9 @@ export default class Player extends Phaser.Sprite {
     if (this.body.position.x > 0) {
        this.body.position.x -= 1;
     };
+  }
+  hit(){
+    console.log('aw');
   }
 
 

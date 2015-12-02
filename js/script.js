@@ -298,6 +298,7 @@
 	    key: 'create',
 	    value: function create() {
 	      cursors = this.game.input.keyboard.createCursorKeys();
+	      this.score = 1;
 	      //background instellen van de start menu + de animatie hiervan
 	      this.background = this.game.add.sprite(0, 0, 'background');
 	      this.background.animations.add('move');
@@ -324,8 +325,8 @@
 	      this.game.add.existing(this.dropper);
 
 	      //dropper test jumpobstakel
-	      this.dropper = new _Dropper2.default(this.game, this.game.width + 400, 185);
-	      this.game.add.existing(this.dropper);
+	      this.dropperLow = new _Dropper2.default(this.game, this.game.width + 400, 200);
+	      this.game.add.existing(this.dropperLow);
 	    }
 	  }, {
 	    key: 'update',
@@ -333,6 +334,9 @@
 	      this.game.physics.arcade.collide(this.kamikaze, this.ground, this.kamikaze.kamikazeDestroy, null, this);
 	      this.game.physics.arcade.collide(this.player, this.ground);
 	      this.game.physics.arcade.collide(this.ground, this.egg, this.egg.break, null, this);
+	      this.game.physics.arcade.collide(this.player, this.dropperLow, this.playerDropperHitHandler, null, this);
+
+	      this.scoreHandler();
 
 	      this.player.body.velocity.x = 0;
 	      if (!cursors.down.isDown) {
@@ -351,6 +355,15 @@
 	      if (cursors.down.isDown && this.player.body.touching.down) {
 	        this.player.duck();
 	      }
+	    }
+	  }, {
+	    key: 'scoreHandler',
+	    value: function scoreHandler() {}
+	  }, {
+	    key: 'playerDropperHitHandler',
+	    value: function playerDropperHitHandler() {
+	      this.dropperLow.kill();
+	      this.player.powerUp();
 	    }
 
 	    // groundHitHandler() {
@@ -504,7 +517,7 @@
 
 	    _this.ducking = false;
 
-	    _this.game.time.events.add(Phaser.Timer.SECOND, _this.powerUp, _this);
+	    //this.game.time.events.add(Phaser.Timer.SECOND, this.powerUp, this);
 	    return _this;
 	  }
 
@@ -561,6 +574,11 @@
 	      if (this.body.position.x > 0) {
 	        this.body.position.x -= 1;
 	      };
+	    }
+	  }, {
+	    key: 'hit',
+	    value: function hit() {
+	      console.log('aw');
 	    }
 	  }]);
 
@@ -669,6 +687,8 @@
 	      _this.animations.play('flap', 10, true);
 
 	      _this.game.physics.arcade.enableBody(_this);
+	      _this.body.setSize(30, 10, 0, 25);
+	      _this.killed = false;
 	      return _this;
 	   }
 
@@ -676,6 +696,11 @@
 	      key: 'update',
 	      value: function update() {
 	         this.body.velocity.x = -200;
+	      }
+	   }, {
+	      key: 'kill',
+	      value: function kill() {
+	         this.destroy();
 	      }
 	   }]);
 
