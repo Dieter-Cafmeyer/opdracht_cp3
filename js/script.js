@@ -284,6 +284,7 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var cursors = undefined;
+	var x = 0;
 
 	var Play = (function (_Phaser$State) {
 	  _inherits(Play, _Phaser$State);
@@ -298,7 +299,9 @@
 	    key: 'create',
 	    value: function create() {
 	      cursors = this.game.input.keyboard.createCursorKeys();
-	      this.score = 1;
+
+	      this.game.score = 0;
+
 	      //background instellen van de start menu + de animatie hiervan
 	      this.background = this.game.add.sprite(0, 0, 'background');
 	      this.background.animations.add('move');
@@ -666,7 +669,7 @@
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 	Object.defineProperty(exports, "__esModule", {
-	   value: true
+	  value: true
 	});
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -676,35 +679,48 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var Dropper = (function (_Phaser$Sprite) {
-	   _inherits(Dropper, _Phaser$Sprite);
+	  _inherits(Dropper, _Phaser$Sprite);
 
-	   function Dropper(game, x, y, frame) {
-	      _classCallCheck(this, Dropper);
+	  function Dropper(game, x, y, frame) {
+	    _classCallCheck(this, Dropper);
 
-	      var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Dropper).call(this, game, x, y, 'dropper', frame));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Dropper).call(this, game, x, y, 'dropper', frame)); //score nog meegeven?
 
-	      _this.animations.add('flap');
-	      _this.animations.play('flap', 10, true);
+	    _this.animations.add('flap');
+	    _this.animations.play('flap', 10, true);
 
-	      _this.game.physics.arcade.enableBody(_this);
-	      _this.body.setSize(30, 10, 0, 25);
-	      _this.killed = false;
-	      return _this;
-	   }
+	    _this.game.physics.arcade.enableBody(_this);
+	    _this.body.setSize(30, 10, 0, 25);
 
-	   _createClass(Dropper, [{
-	      key: 'update',
-	      value: function update() {
-	         this.body.velocity.x = -200;
-	      }
-	   }, {
-	      key: 'kill',
-	      value: function kill() {
-	         this.destroy();
-	      }
-	   }]);
+	    return _this;
+	  }
 
-	   return Dropper;
+	  _createClass(Dropper, [{
+	    key: 'update',
+	    value: function update() {
+	      this.checkWorldBounds = true;
+	      this.body.velocity.x = -200;
+
+	      if (this.body.x < this.game.world.width) {
+	        this.events.onOutOfBounds.add(this.handleScore, this);
+	      };
+	      if (this.body.x < this.game.world.bounds.left - this.width) {
+	        this.destroy();
+	      };
+	    }
+	  }, {
+	    key: 'kill',
+	    value: function kill() {
+	      this.destroy();
+	    }
+	  }, {
+	    key: 'handleScore',
+	    value: function handleScore(score) {
+	      this.game.score++;
+	    }
+	  }]);
+
+	  return Dropper;
 	})(Phaser.Sprite);
 
 	exports.default = Dropper;

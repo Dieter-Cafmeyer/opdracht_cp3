@@ -5,11 +5,13 @@ import Egg from '../objects/Egg.js';
 import Dropper from '../objects/Dropper.js';
 
 let cursors;
-
+let x = 0;
 export default class Play extends Phaser.State {
   create() {
     cursors = this.game.input.keyboard.createCursorKeys();
-    this.score = 1;
+
+    this.game.score = 0;
+
     //background instellen van de start menu + de animatie hiervan
     this.background = this.game.add.sprite(0,0,'background');
     this.background.animations.add('move');
@@ -73,7 +75,7 @@ export default class Play extends Phaser.State {
   }
 
   scoreHandler(){
-  
+    
   }
 
   playerDropperHitHandler(){
