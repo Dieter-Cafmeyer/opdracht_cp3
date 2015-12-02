@@ -8,8 +8,6 @@ let cursors;
 
 export default class Play extends Phaser.State {
   create() {
-    console.log('Play');
-    
     cursors = this.game.input.keyboard.createCursorKeys();
     //background instellen van de start menu + de animatie hiervan
     this.background = this.game.add.sprite(0,0,'background');
@@ -52,7 +50,7 @@ export default class Play extends Phaser.State {
           {
             this.player.body.velocity.x = -150;
           }
-        else if (this.player.body.position.x < 150 && cursors.right.isDown)
+        else if (this.player.body.position.x < 300 && cursors.right.isDown)
           {
             this.player.body.velocity.x = 150;
           }
@@ -68,7 +66,6 @@ export default class Play extends Phaser.State {
     {
         this.player.duck();
     }
-    console.log(this.player.ducking);
   }
 
   

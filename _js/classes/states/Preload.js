@@ -19,6 +19,8 @@ export default class Preload extends Phaser.State {
     this.load.image('title', 'assets/title.png');
     this.load.image('kamikaze_dead', 'assets/kamikaze_dead.png');
 
+    this.load.script('filter', 'https://cdn.rawgit.com/photonstorm/phaser/master/filters/Plasma.js');
+
   }
   create() {
   }
