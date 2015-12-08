@@ -21,11 +21,11 @@ export default class Egg extends Phaser.Sprite {
   }
 
   break() {
-    this.egg.vermeerder=0;
-    var x = this.egg.x;
-    var y = this.egg.y;
+    this.vermeerder=0;
+    var x = this.x;
+    var y = this.y;
 
-    this.egg.animations.play('break', 10, false,true);
+    this.animations.play('break', 10, false,true);
 
     // this.egg.destroy();
 

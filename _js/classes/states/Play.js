@@ -30,36 +30,105 @@ export default class Play extends Phaser.State {
     this.game.add.existing(this.player);
 
     //ei test
-    this.egg = new Egg(this.game, 300,100);
-    this.game.add.existing(this.egg);
+    // this.egg = new Egg(this.game, 300,100);
+    // this.game.add.existing(this.egg);
 
     //dropper test boven
-    this.dropper = new Dropper(this.game, this.game.width+200,10);
-    this.game.add.existing(this.dropper);
+    // this.dropper = new Dropper(this.game, this.game.width+200,10);
+    // this.game.add.existing(this.dropper);
 
     //dropper test jumpobstakel
     // this.dropperLow = new Dropper(this.game, this.game.width+400,200);
     // this.game.add.existing(this.dropperLow);
 
+    this.eggGroup = this.game.add.group();
+
+    this.dropperHighGroup = this.game.add.group();
+    this.dropperHightimer = this.game.time.events.loop(5000, this.addDropperHigh, this);
+
     this.dropperLowGroup = this.game.add.group();
     this.dropperLowtimer = this.game.time.events.loop(1000, this.addDropperLow, this);
 
+
     this.livesText = this.game.add.text(450, 0, "Lives: " + this.player.lives);
+
+
 
   }
   update() {
     this.game.physics.arcade.collide(this.kamikaze, this.ground, this.kamikaze.kamikazeDestroy, null, this);
     this.game.physics.arcade.collide(this.player, this.ground);
-    this.game.physics.arcade.collide(this.ground, this.egg, this.egg.break, null, this);
+    // this.game.physics.arcade.collide(this.ground, this.egg, this.egg.break, null, this);
     //this.game.physics.arcade.collide(this.player, this.dropperLow, this.playerDropperHitHandler, null, this);
 
     this.game.physics.arcade.collide(this.player, this.dropperLowGroup, this.playerDropperHitHandler, null, this);
-
+    this.game.physics.arcade.collide(this.player, this.eggGroup, this.playerEggHitHandler, null,this);
+    this.game.physics.arcade.collide(this.ground, this.eggGroup, this.eggGroundHandler, null, this);
+    
     this.scoreHandler();
 
     if (this.player.lives < 0) {
       this.game.state.start('Play');
     };
+
+
+    
+      // let aantal = 0;
+
+      this.dropperHighGroup.forEach(dropper =>{
+
+
+        console.log(dropper.dropped);
+        let spelerX = Math.floor(this.player.body.x);
+        let vogelX = Math.floor(dropper.body.x);
+
+        console.log("speler: " + spelerX + " vogel: " + vogelX);
+
+        if (vogelX < spelerX+3 && vogelX > spelerX-3) {
+          console.log('1 eitje aub');
+          this.dropEgg(dropper.body.x,dropper.body.y);
+        };
+
+        if (dropper.body.x < this.player.body.x) {
+          dropper.dropped=true;
+        };
+
+        // this.eiTeller=1;
+        // // console.log(dropper.body.x);
+        // // console.log(this.player.body.x);
+        // // aantal+=1;
+        // // console.log(aantal);
+
+        // // console.log('vogel: ' + dropper.body.x + 'Player: ' + this.player.body.x);
+        // // if (dropper.body.x > this.player.body.x + 10 && dropper.body.x < this.player.body.x - 10) {
+        // //   console.log('BOVEN SPELER');
+        // // };
+        // if ((dropper.body.x < this.player.body.x) && this.dropped==false) {
+        //   if (this.eiTeller==1) {
+        //       this.dropped=true;
+        //     console.log('maak ei');
+        //     this.dropEgg(dropper.body.x,dropper.body.y);
+        //   };
+        //   this.eiTeller-=1;
+        //   if (this.eiTeller < 0) {
+        //     this.eiTeller=0;
+        //   };
+          
+        //  this.dropped=true;
+
+            
+        //   //console.log('eitje vallen');
+        //   //console.log(dropped);
+          
+        // };
+
+        // console.log(this.dropped);
+
+      });
+    
+    
+
+
 
 
 
@@ -85,7 +154,9 @@ export default class Play extends Phaser.State {
     {
         this.player.duck();
     }
+
   }
+
 
   scoreHandler(){
     
@@ -98,11 +169,40 @@ export default class Play extends Phaser.State {
     this.livesText.setText("Lives: " + this.player.lives);
   }
 
+  playerEggHitHandler(player, egg){
+    if (egg.body.y > this.player.height-20) {
+      egg.break();
+      this.player.hit();
+      this.livesText.setText("Lives: " + this.player.lives);
+    };
+  }
+
+  eggGroundHandler(ground, egg){
+    egg.break();
+  }
+
   addDropperLow(){
     let dropperLow;
     dropperLow = new Dropper(this.game, this.game.width+400,200);
 
     this.dropperLowGroup.add(dropperLow);
+  }
+
+  addDropperHigh(){
+    let dropperHigh;
+    dropperHigh = new Dropper(this.game, this.game.width+200,10);
+
+    this.dropperHighGroup.add(dropperHigh);
+
+
+  }
+
+  dropEgg(x,y){
+    let egg;
+    egg = new Egg(this.game, x, y);
+    this.eggGroup.add(egg);
+
+    
   }
   
   // groundHitHandler() {

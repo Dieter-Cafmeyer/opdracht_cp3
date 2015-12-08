@@ -9,6 +9,8 @@ export default class Dropper extends Phaser.Sprite {
     this.game.physics.arcade.enableBody(this);
     this.body.setSize(30,10,0,25);
 
+    this.dropped=false;
+
   }
   update() {
   	this.checkWorldBounds = true;

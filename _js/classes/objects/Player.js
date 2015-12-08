@@ -35,7 +35,6 @@ export default class Player extends Phaser.Sprite {
     // if (this.powered == true) {
     //   this.game.time.events.add(Phaser.Timer.SECOND * 5, this.powerDown , this);
     // };
-    console.log(this.lives);
   }
 
   //powerhandling
