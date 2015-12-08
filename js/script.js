@@ -328,8 +328,13 @@
 	      this.game.add.existing(this.dropper);
 
 	      //dropper test jumpobstakel
-	      this.dropperLow = new _Dropper2.default(this.game, this.game.width + 400, 200);
-	      this.game.add.existing(this.dropperLow);
+	      // this.dropperLow = new Dropper(this.game, this.game.width+400,200);
+	      // this.game.add.existing(this.dropperLow);
+
+	      this.dropperLowGroup = this.game.add.group();
+	      this.dropperLowtimer = this.game.time.events.loop(1000, this.addDropperLow, this);
+
+	      this.livesText = this.game.add.text(450, 0, "Lives: " + this.player.lives);
 	    }
 	  }, {
 	    key: 'update',
@@ -337,9 +342,15 @@
 	      this.game.physics.arcade.collide(this.kamikaze, this.ground, this.kamikaze.kamikazeDestroy, null, this);
 	      this.game.physics.arcade.collide(this.player, this.ground);
 	      this.game.physics.arcade.collide(this.ground, this.egg, this.egg.break, null, this);
-	      this.game.physics.arcade.collide(this.player, this.dropperLow, this.playerDropperHitHandler, null, this);
+	      //this.game.physics.arcade.collide(this.player, this.dropperLow, this.playerDropperHitHandler, null, this);
+
+	      this.game.physics.arcade.collide(this.player, this.dropperLowGroup, this.playerDropperHitHandler, null, this);
 
 	      this.scoreHandler();
+
+	      if (this.player.lives < 0) {
+	        this.game.state.start('Play');
+	      };
 
 	      this.player.body.velocity.x = 0;
 	      if (!cursors.down.isDown) {
@@ -364,9 +375,19 @@
 	    value: function scoreHandler() {}
 	  }, {
 	    key: 'playerDropperHitHandler',
-	    value: function playerDropperHitHandler() {
-	      this.dropperLow.kill();
-	      this.player.powerUp();
+	    value: function playerDropperHitHandler(player, enemy) {
+	      enemy.kill();
+	      //this.dropperLow.kill();
+	      this.player.hit();
+	      this.livesText.setText("Lives: " + this.player.lives);
+	    }
+	  }, {
+	    key: 'addDropperLow',
+	    value: function addDropperLow() {
+	      var dropperLow = undefined;
+	      dropperLow = new _Dropper2.default(this.game, this.game.width + 400, 200);
+
+	      this.dropperLowGroup.add(dropperLow);
 	    }
 
 	    // groundHitHandler() {
@@ -512,6 +533,8 @@
 
 	    _this.powered = false;
 
+	    _this.lives = 2;
+
 	    _this.anchor.setTo(0.5, 0.5);
 	    _this.animations.add('run', [1, 2, 3, 4]);
 
@@ -528,8 +551,11 @@
 	    key: 'update',
 	    value: function update() {
 
-	      if (this.powered) {
+	      if (this.powered == true) {
 	        this.powerHandler();
+	        if (this.lives < 0) {
+	          this.lives = 1;
+	        };
 	      }
 
 	      if (!this.body.touching.down) {
@@ -538,6 +564,11 @@
 	        this.animations.play('run', 9, true);
 	      }
 	      this.ducking = false;
+
+	      // if (this.powered == true) {
+	      //   this.game.time.events.add(Phaser.Timer.SECOND * 5, this.powerDown , this);
+	      // };
+	      console.log(this.lives);
 	    }
 
 	    //powerhandling
@@ -552,7 +583,7 @@
 	    key: 'powerUp',
 	    value: function powerUp() {
 	      this.powered = true;
-	      this.game.time.events.loop(Phaser.Timer.SECOND * 5, this.powerDown, this);
+	      this.game.time.events.add(Phaser.Timer.SECOND * 5, this.powerDown, this);
 	    }
 	  }, {
 	    key: 'powerDown',
@@ -581,7 +612,10 @@
 	  }, {
 	    key: 'hit',
 	    value: function hit() {
-	      console.log('aw');
+	      if (this.powered == false) {
+	        this.lives -= 1;
+	      };
+	      this.powerUp();
 	    }
 	  }]);
 

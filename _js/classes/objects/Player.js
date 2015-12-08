@@ -4,6 +4,8 @@ export default class Player extends Phaser.Sprite {
 
     this.powered = false;
 
+    this.lives = 2;
+
     this.anchor.setTo(0.5, 0.5);
     this.animations.add('run', [ 1, 2, 3,4]);
 
@@ -16,8 +18,11 @@ export default class Player extends Phaser.Sprite {
   }
   update() {
 
-    if(this.powered) {
-      this.powerHandler()
+    if(this.powered == true) {
+      this.powerHandler();
+      if (this.lives < 0) {
+        this.lives=1;
+      };
     }
 
     if (!this.body.touching.down) {
@@ -26,6 +31,11 @@ export default class Player extends Phaser.Sprite {
       this.animations.play('run', 9, true);
     }
     this.ducking=false;
+
+    // if (this.powered == true) {
+    //   this.game.time.events.add(Phaser.Timer.SECOND * 5, this.powerDown , this);
+    // };
+    console.log(this.lives);
   }
 
   //powerhandling
@@ -36,7 +46,7 @@ export default class Player extends Phaser.Sprite {
 
   powerUp(){
     this.powered = true;
-    this.game.time.events.loop(Phaser.Timer.SECOND * 5, this.powerDown , this);
+    this.game.time.events.add(Phaser.Timer.SECOND * 5, this.powerDown , this);
   }
 
   powerDown() {
@@ -58,7 +68,10 @@ export default class Player extends Phaser.Sprite {
     };
   }
   hit(){
-    console.log('aw');
+    if (this.powered==false) {
+      this.lives-=1;
+    };
+    this.powerUp();
   }
 
 

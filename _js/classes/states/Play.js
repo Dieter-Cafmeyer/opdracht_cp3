@@ -38,17 +38,30 @@ export default class Play extends Phaser.State {
     this.game.add.existing(this.dropper);
 
     //dropper test jumpobstakel
-    this.dropperLow = new Dropper(this.game, this.game.width+400,200);
-    this.game.add.existing(this.dropperLow);
+    // this.dropperLow = new Dropper(this.game, this.game.width+400,200);
+    // this.game.add.existing(this.dropperLow);
+
+    this.dropperLowGroup = this.game.add.group();
+    this.dropperLowtimer = this.game.time.events.loop(1000, this.addDropperLow, this);
+
+    this.livesText = this.game.add.text(450, 0, "Lives: " + this.player.lives);
 
   }
   update() {
     this.game.physics.arcade.collide(this.kamikaze, this.ground, this.kamikaze.kamikazeDestroy, null, this);
     this.game.physics.arcade.collide(this.player, this.ground);
     this.game.physics.arcade.collide(this.ground, this.egg, this.egg.break, null, this);
-    this.game.physics.arcade.collide(this.player, this.dropperLow, this.playerDropperHitHandler, null, this);
+    //this.game.physics.arcade.collide(this.player, this.dropperLow, this.playerDropperHitHandler, null, this);
+
+    this.game.physics.arcade.collide(this.player, this.dropperLowGroup, this.playerDropperHitHandler, null, this);
 
     this.scoreHandler();
+
+    if (this.player.lives < 0) {
+      this.game.state.start('Play');
+    };
+
+
 
     this.player.body.velocity.x=0;
     if (!cursors.down.isDown) {
@@ -78,9 +91,18 @@ export default class Play extends Phaser.State {
     
   }
 
-  playerDropperHitHandler(){
-    this.dropperLow.kill();
-    this.player.powerUp();
+  playerDropperHitHandler(player, enemy){
+    enemy.kill();
+    //this.dropperLow.kill();
+    this.player.hit();
+    this.livesText.setText("Lives: " + this.player.lives);
+  }
+
+  addDropperLow(){
+    let dropperLow;
+    dropperLow = new Dropper(this.game, this.game.width+400,200);
+
+    this.dropperLowGroup.add(dropperLow);
   }
   
   // groundHitHandler() {
