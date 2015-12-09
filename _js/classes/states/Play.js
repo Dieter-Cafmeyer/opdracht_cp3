@@ -23,14 +23,17 @@ export default class Play extends Phaser.State {
     this.game.add.existing(this.ground);
 
     //testje om kamikaze op het scherm te laten komen
-    this.kamikaze = new Kamikaze(this.game, 560, 50);
-    this.game.add.existing(this.kamikaze);
+    //this.kamikaze = new Kamikaze(this.game, 560, 50);
+    //this.game.add.existing(this.kamikaze);
 
     //player toevoegen
     this.player = new Player(this.game, 100,100);
     this.game.add.existing(this.player);
 
     this.eggGroup = this.game.add.group();
+
+    this.kamikazeGroup = this.game.add.group();
+    this.kamikazeTimer = this.game.time.events.loop(5000, this.addKamikaze, this);
 
     this.dropperHighGroup = this.game.add.group();
     this.dropperHightimer = this.game.time.events.loop(5000, this.addDropperHigh, this);
@@ -44,10 +47,11 @@ export default class Play extends Phaser.State {
     this.livesText = this.game.add.text(450, 0, "Lives: " + this.player.lives);
   }
   update() {
-    this.game.physics.arcade.collide(this.kamikaze, this.ground, this.kamikaze.kamikazeDestroy, null, this);
+    this.game.physics.arcade.collide(this.kamikazeGroup, this.ground, this.kamikazeGroundHitHandler, null, this);
     this.game.physics.arcade.collide(this.player, this.ground);
 
     this.game.physics.arcade.collide(this.player, this.dropperLowGroup, this.playerDropperHitHandler, null, this);
+    this.game.physics.arcade.collide(this.player, this.kamikazeGroup, this.kamikazeHitHandler, null, this);
     this.game.physics.arcade.collide(this.player, this.eggGroup, this.playerEggHitHandler, null,this);
     this.game.physics.arcade.collide(this.ground, this.eggGroup, this.eggGroundHandler, null, this);
     this.game.physics.arcade.collide(this.player, this.potionGroup, this.playerPotionHitHandler, null, this);
@@ -78,7 +82,7 @@ export default class Play extends Phaser.State {
           {
             this.player.body.velocity.x = -150;
           }
-        else if (this.player.body.position.x < 300 && cursors.right.isDown)
+        else if ((this.player.body.position.x + this.player.width/2< this.game.world.width) && cursors.right.isDown)
           {
             this.player.body.velocity.x = 150;
           }
@@ -108,6 +112,17 @@ export default class Play extends Phaser.State {
     this.livesText.setText("Lives: " + this.player.lives);
   }
 
+  kamikazeHitHandler(player, kamikaze){
+    kamikaze.destroy();
+    //this.dropperLow.kill();
+    this.player.hit();
+    this.livesText.setText("Lives: " + this.player.lives);
+  }
+
+  kamikazeGroundHitHandler(ground, kamikaze){
+    kamikaze.kamikazeDestroy();
+  }
+
   playerEggHitHandler(player, egg){
     //damaged only if egg is still in flight
     //broken eggs on the ground do not harm the player
@@ -134,6 +149,13 @@ export default class Play extends Phaser.State {
     dropperLow = new Dropper(this.game, this.game.width+400,200);
 
     this.dropperLowGroup.add(dropperLow);
+  }
+
+  addKamikaze(){
+    let kamikaze;
+    kamikaze = new Kamikaze(this.game, 560, 50);
+
+    this.kamikazeGroup.add(kamikaze);
   }
 
   addDropperHigh(){

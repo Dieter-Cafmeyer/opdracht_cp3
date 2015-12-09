@@ -159,7 +159,7 @@
 
 	      //Inladen van de spritesheets
 	      this.load.spritesheet('background', 'assets/background.png', 560, 272, 8);
-	      this.load.spritesheet('kamikaze', 'assets/kamikaze.png', 55, 33, 2);
+	      this.load.spritesheet('kamikaze', 'assets/kamikaze.png', 60, 33);
 	      this.load.spritesheet('player', 'assets/player.png', 55, 66);
 	      this.load.spritesheet('egg', 'assets/egg.png', 30, 30);
 	      this.load.spritesheet('dropper', 'assets/bird2.png', 36, 50);
@@ -169,7 +169,6 @@
 	      this.load.image('startButton', 'assets/start-button.png');
 	      this.load.image('ground', 'assets/grond.png');
 	      this.load.image('title', 'assets/title.png');
-	      this.load.image('kamikaze_dead', 'assets/kamikaze_dead.png');
 
 	      this.load.script('filter', 'https://cdn.rawgit.com/photonstorm/phaser/master/filters/Plasma.js');
 	    }
@@ -276,7 +275,7 @@
 
 	var _Dropper2 = _interopRequireDefault(_Dropper);
 
-	var _Potion = __webpack_require__(10);
+	var _Potion = __webpack_require__(11);
 
 	var _Potion2 = _interopRequireDefault(_Potion);
 
@@ -317,14 +316,17 @@
 	      this.game.add.existing(this.ground);
 
 	      //testje om kamikaze op het scherm te laten komen
-	      this.kamikaze = new _Kamikaze2.default(this.game, 560, 50);
-	      this.game.add.existing(this.kamikaze);
+	      //this.kamikaze = new Kamikaze(this.game, 560, 50);
+	      //this.game.add.existing(this.kamikaze);
 
 	      //player toevoegen
 	      this.player = new _Player2.default(this.game, 100, 100);
 	      this.game.add.existing(this.player);
 
 	      this.eggGroup = this.game.add.group();
+
+	      this.kamikazeGroup = this.game.add.group();
+	      this.kamikazeTimer = this.game.time.events.loop(5000, this.addKamikaze, this);
 
 	      this.dropperHighGroup = this.game.add.group();
 	      this.dropperHightimer = this.game.time.events.loop(5000, this.addDropperHigh, this);
@@ -342,10 +344,11 @@
 	    value: function update() {
 	      var _this2 = this;
 
-	      this.game.physics.arcade.collide(this.kamikaze, this.ground, this.kamikaze.kamikazeDestroy, null, this);
+	      this.game.physics.arcade.collide(this.kamikazeGroup, this.ground, this.kamikazeGroundHitHandler, null, this);
 	      this.game.physics.arcade.collide(this.player, this.ground);
 
 	      this.game.physics.arcade.collide(this.player, this.dropperLowGroup, this.playerDropperHitHandler, null, this);
+	      this.game.physics.arcade.collide(this.player, this.kamikazeGroup, this.kamikazeHitHandler, null, this);
 	      this.game.physics.arcade.collide(this.player, this.eggGroup, this.playerEggHitHandler, null, this);
 	      this.game.physics.arcade.collide(this.ground, this.eggGroup, this.eggGroundHandler, null, this);
 	      this.game.physics.arcade.collide(this.player, this.potionGroup, this.playerPotionHitHandler, null, this);
@@ -373,7 +376,7 @@
 	      if (!cursors.down.isDown) {
 	        if (this.player.body.position.x > 0 && cursors.left.isDown) {
 	          this.player.body.velocity.x = -150;
-	        } else if (this.player.body.position.x < 300 && cursors.right.isDown) {
+	        } else if (this.player.body.position.x + this.player.width / 2 < this.game.world.width && cursors.right.isDown) {
 	          this.player.body.velocity.x = 150;
 	        }
 	      };
@@ -397,6 +400,19 @@
 	      //this.dropperLow.kill();
 	      this.player.hit();
 	      this.livesText.setText("Lives: " + this.player.lives);
+	    }
+	  }, {
+	    key: 'kamikazeHitHandler',
+	    value: function kamikazeHitHandler(player, kamikaze) {
+	      kamikaze.destroy();
+	      //this.dropperLow.kill();
+	      this.player.hit();
+	      this.livesText.setText("Lives: " + this.player.lives);
+	    }
+	  }, {
+	    key: 'kamikazeGroundHitHandler',
+	    value: function kamikazeGroundHitHandler(ground, kamikaze) {
+	      kamikaze.kamikazeDestroy();
 	    }
 	  }, {
 	    key: 'playerEggHitHandler',
@@ -429,6 +445,14 @@
 	      dropperLow = new _Dropper2.default(this.game, this.game.width + 400, 200);
 
 	      this.dropperLowGroup.add(dropperLow);
+	    }
+	  }, {
+	    key: 'addKamikaze',
+	    value: function addKamikaze() {
+	      var kamikaze = undefined;
+	      kamikaze = new _Kamikaze2.default(this.game, 560, 50);
+
+	      this.kamikazeGroup.add(kamikaze);
 	    }
 	  }, {
 	    key: 'addDropperHigh',
@@ -531,31 +555,40 @@
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Kamikaze).call(this, game, x, y, 'kamikaze', frame));
 
-	    _this.anchor.setTo(0.5, 0.5);
-	    _this.animations.add('flap');
+	    _this.anchor.setTo(0.5, 0.85);
+	    _this.animations.add('flap', [0, 1]);
 	    _this.animations.play('flap', 5, true);
+	    _this.angle = _this.game.rnd.integerInRange(-15, -45);
+
+	    _this.kamiX = _this.game.rnd.integerInRange(0, -200);
+	    _this.isOnGround = false;
 
 	    _this.game.physics.arcade.enableBody(_this);
+	    _this.body.setSize(45, 20);
 	    return _this;
 	  }
 
 	  _createClass(Kamikaze, [{
 	    key: 'update',
 	    value: function update() {
-	      this.body.velocity.x = -200;
-	      this.body.velocity.y = 150;
-	      this.angle = -20;
+
+	      this.body.velocity.x = this.kamiX;
+	      this.body.velocity.y = 100;
+
+	      if (this.isOnGround == true) {
+	        this.body.velocity.x = -200;
+	      };
+
+	      if (this.body.x < this.game.world.bounds.left - this.width) {
+	        this.destroy();
+	      }
 	    }
 	  }, {
 	    key: 'kamikazeDestroy',
 	    value: function kamikazeDestroy() {
-	      var x = this.kamikaze.x - 40;
-	      var y = this.kamikaze.y - 20;
-	      this.kamikaze.destroy();
-
-	      this.kamikaze_dead = this.game.add.sprite(x, y, 'kamikaze_dead');
-	      this.game.physics.arcade.enableBody(this.kamikaze_dead);
-	      this.kamikaze_dead.body.velocity.x = -200;
+	      this.angle = 0;
+	      this.frame = 2;
+	      this.isOnGround = true;
 	    }
 	  }]);
 
@@ -804,7 +837,8 @@
 	exports.default = Dropper;
 
 /***/ },
-/* 10 */
+/* 10 */,
+/* 11 */
 /***/ function(module, exports) {
 
 	'use strict';
