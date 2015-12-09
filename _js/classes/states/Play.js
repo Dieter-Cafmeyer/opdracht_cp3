@@ -50,6 +50,10 @@ export default class Play extends Phaser.State {
 
     this.livesText = this.game.add.text(450, 0, "Lives: " + this.player.lives);
     this.scoreText = this.game.add.text(0, 0, "Score: " + this.game.score);
+    
+    this.count = 3;
+
+    this.countdownTimer = this.game.time.events.loop(1000, this.countdown, this);
   }
   update() {
     this.game.physics.arcade.collide(this.kamikazeGroup, this.ground, this.kamikazeGroundHitHandler, null, this);
@@ -224,5 +228,24 @@ export default class Play extends Phaser.State {
   shutdown() {
     // this.bird.destroy();
     
+  }
+
+  countdown() {
+    if(this.countdownImage){
+      this.countdownImage.kill();
+    }
+    this.count--;
+
+    this.countdownImage = this.game.add.sprite(this.game.width/2,150,'countdown');
+    this.countdownImage.anchor.setTo(0.5, 0.5);
+    this.countdownImage.frame = this.count;
+
+    if(this.count == -1){
+      this.goImage = this.game.add.sprite(this.game.width/2,150,'go');
+      this.goImage.anchor.setTo(0.5, 0.5);
+    }else if(this.count <= -2) {
+      this.goImage.destroy();
+      this.countdownImage.destroy();
+    }
   }
 }

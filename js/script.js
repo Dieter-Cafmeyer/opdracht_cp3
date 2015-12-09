@@ -169,6 +169,7 @@
 	      this.load.spritesheet('egg', 'assets/egg.png', 30, 30);
 	      this.load.spritesheet('dropper', 'assets/bird2.png', 36, 50);
 	      this.load.spritesheet('potion', 'assets/potion.png', 128 / 4, 36);
+	      this.load.spritesheet('countdown', 'assets/countdown.png', 24, 36);
 
 	      //Inladen van de images
 	      this.load.image('startButton', 'assets/start-button.png');
@@ -176,13 +177,8 @@
 	      this.load.image('title', 'assets/title.png');
 	      this.load.image('gameover', 'assets/gameover.png');
 	      this.load.image('restartButton', 'assets/replay.png');
+	      this.load.image('go', 'assets/go.png');
 	    }
-	  }, {
-	    key: 'create',
-	    value: function create() {}
-	  }, {
-	    key: 'update',
-	    value: function update() {}
 	  }, {
 	    key: 'onLoadComplete',
 	    value: function onLoadComplete() {
@@ -348,6 +344,10 @@
 
 	      this.livesText = this.game.add.text(450, 0, "Lives: " + this.player.lives);
 	      this.scoreText = this.game.add.text(0, 0, "Score: " + this.game.score);
+
+	      this.count = 3;
+
+	      this.countdownTimer = this.game.time.events.loop(1000, this.countdown, this);
 	    }
 	  }, {
 	    key: 'update',
@@ -532,6 +532,26 @@
 	    value: function shutdown() {
 	      // this.bird.destroy();
 
+	    }
+	  }, {
+	    key: 'countdown',
+	    value: function countdown() {
+	      if (this.countdownImage) {
+	        this.countdownImage.kill();
+	      }
+	      this.count--;
+
+	      this.countdownImage = this.game.add.sprite(this.game.width / 2, 150, 'countdown');
+	      this.countdownImage.anchor.setTo(0.5, 0.5);
+	      this.countdownImage.frame = this.count;
+
+	      if (this.count == -1) {
+	        this.goImage = this.game.add.sprite(this.game.width / 2, 150, 'go');
+	        this.goImage.anchor.setTo(0.5, 0.5);
+	      } else if (this.count <= -2) {
+	        this.goImage.destroy();
+	        this.countdownImage.destroy();
+	      }
 	    }
 	  }]);
 
