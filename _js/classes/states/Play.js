@@ -64,7 +64,7 @@ export default class Play extends Phaser.State {
     this.scoreHandler();
 
     if (this.player.lives <= 0) {
-      this.game.state.start('Menu');
+      this.game.state.start('Dead');
     };
 
     this.dropperHighGroup.forEach(dropper =>{

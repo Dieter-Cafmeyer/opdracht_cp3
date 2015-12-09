@@ -176,8 +176,6 @@
 	      this.load.image('title', 'assets/title.png');
 	      this.load.image('gameover', 'assets/gameover.png');
 	      this.load.image('restartButton', 'assets/replay.png');
-
-	      this.load.script('filter', 'https://cdn.rawgit.com/photonstorm/phaser/master/filters/Plasma.js');
 	    }
 	  }, {
 	    key: 'create',
@@ -282,7 +280,7 @@
 
 	var _Dropper2 = _interopRequireDefault(_Dropper);
 
-	var _Potion = __webpack_require__(10);
+	var _Potion = __webpack_require__(11);
 
 	var _Potion2 = _interopRequireDefault(_Potion);
 
@@ -368,7 +366,7 @@
 	      this.scoreHandler();
 
 	      if (this.player.lives <= 0) {
-	        this.game.state.start('Menu');
+	        this.game.state.start('Dead');
 	      };
 
 	      this.dropperHighGroup.forEach(function (dropper) {
@@ -889,7 +887,8 @@
 	exports.default = Dropper;
 
 /***/ },
-/* 10 */
+/* 10 */,
+/* 11 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -980,7 +979,7 @@
 	  _createClass(Dead, [{
 	    key: 'create',
 	    value: function create() {
-	      this.game.stage.backgroundColor = '#c54242';
+	      this.game.stage.backgroundColor = '#c58b8b';
 
 	      this.title = this.game.add.sprite(this.game.width / 2, 30, 'gameover');
 	      this.title.anchor.setTo(0.5, 0.5);
