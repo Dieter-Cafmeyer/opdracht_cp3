@@ -62,6 +62,10 @@
 
 	var _Play2 = _interopRequireDefault(_Play);
 
+	var _Dead = __webpack_require__(12);
+
+	var _Dead2 = _interopRequireDefault(_Dead);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var game = undefined;
@@ -72,6 +76,7 @@
 	  game.state.add('Preload', _Preload2.default, false);
 	  game.state.add('Menu', _Menu2.default, false);
 	  game.state.add('Play', _Play2.default, false);
+	  game.state.add('Dead', _Dead2.default, false);
 	  game.state.start('Boot');
 	};
 
@@ -169,6 +174,8 @@
 	      this.load.image('startButton', 'assets/start-button.png');
 	      this.load.image('ground', 'assets/grond.png');
 	      this.load.image('title', 'assets/title.png');
+	      this.load.image('gameover', 'assets/gameover.png');
+	      this.load.image('restartButton', 'assets/replay.png');
 
 	      this.load.script('filter', 'https://cdn.rawgit.com/photonstorm/phaser/master/filters/Plasma.js');
 	    }
@@ -907,6 +914,60 @@
 	})(Phaser.Sprite);
 
 	exports.default = Potion;
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Dead = (function (_Phaser$State) {
+	  _inherits(Dead, _Phaser$State);
+
+	  function Dead() {
+	    _classCallCheck(this, Dead);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Dead).apply(this, arguments));
+	  }
+
+	  _createClass(Dead, [{
+	    key: 'create',
+	    value: function create() {
+	      this.game.stage.backgroundColor = '#c54242';
+
+	      this.title = this.game.add.sprite(this.game.width / 2, 30, 'gameover');
+	      this.title.anchor.setTo(0.5, 0.5);
+
+	      this.scoreText = this.game.add.text(20, 70, "Uw score: 200");
+
+	      this.highscoreTitel = this.game.add.text(340, 70, "Highscores");
+
+	      this.startButton = this.game.add.button(100, 220, 'restartButton', this.startClick, this);
+	      this.startButton.anchor.setTo(0.5, 0.5);
+	    }
+	  }, {
+	    key: 'startClick',
+	    value: function startClick() {
+	      this.game.state.start('Play');
+	    }
+	  }]);
+
+	  return Dead;
+	})(Phaser.State);
+
+	exports.default = Dead;
 
 /***/ }
 /******/ ]);

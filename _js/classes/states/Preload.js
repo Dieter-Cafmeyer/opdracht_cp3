@@ -18,6 +18,8 @@ export default class Preload extends Phaser.State {
     this.load.image('startButton', 'assets/start-button.png');
     this.load.image('ground', 'assets/grond.png');
     this.load.image('title', 'assets/title.png');
+    this.load.image('gameover', 'assets/gameover.png');
+    this.load.image('restartButton', 'assets/replay.png');
 
     this.load.script('filter', 'https://cdn.rawgit.com/photonstorm/phaser/master/filters/Plasma.js');
 
