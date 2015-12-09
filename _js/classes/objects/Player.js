@@ -4,22 +4,27 @@ export default class Player extends Phaser.Sprite {
 
     this.powered = false;
 
+    this.lives = 3;
+
     this.anchor.setTo(0.5, 0.5);
     this.animations.add('run', [ 1, 2, 3,4]);
 
     this.game.physics.arcade.enableBody(this);
     this.body.gravity.y = 400;
 
-    this.ducking = false;
+    //Hitregion: exclude arms
+    this.body.setSize(40,60);
 
-    this.game.time.events.add(Phaser.Timer.SECOND, this.powerUp, this);
+    this.ducking = false;
   }
   update() {
-
-    if(this.powered) {
-      this.powerHandler()
+    if(this.powered == true) {
+      this.powerHandler();
+      if (this.lives < 0) {
+        this.lives=1;
+      };
     }
-
+    
     if (!this.body.touching.down) {
       this.frame=4;
     } else{
@@ -36,14 +41,16 @@ export default class Player extends Phaser.Sprite {
 
   powerUp(){
     this.powered = true;
-    this.game.time.events.loop(Phaser.Timer.SECOND * 5, this.powerDown , this);
+    this.game.time.events.add(Phaser.Timer.SECOND * 5, this.powerDown , this);
   }
 
   powerDown() {
-    this.powered = false;
-    this.tint = 0xFFFFFF;
+    if (this.powered == true) {
+      this.powered = false;
+      this.tint = 0xFFFFFF;
+    };
+    
   }
-  //----------
 
   jump() {
     // this.flapSound.play();
@@ -57,8 +64,15 @@ export default class Player extends Phaser.Sprite {
        this.body.position.x -= 1;
     };
   }
-
-
+  hit(){
+    if (this.powered==false) {
+      this.lives-=1;
+    };
+    this.powerUp();
+  }
+  extraLife(){
+    this.lives+=1;
+  }
 }
 
 
