@@ -163,6 +163,7 @@
 	      this.load.spritesheet('player', 'assets/player.png', 55, 66);
 	      this.load.spritesheet('egg', 'assets/egg.png', 30, 30);
 	      this.load.spritesheet('dropper', 'assets/bird2.png', 36, 50);
+	      this.load.spritesheet('potion', 'assets/potion.png', 128 / 4, 36);
 
 	      //Inladen van de images
 	      this.load.image('startButton', 'assets/start-button.png');
@@ -275,6 +276,10 @@
 
 	var _Dropper2 = _interopRequireDefault(_Dropper);
 
+	var _Potion = __webpack_require__(10);
+
+	var _Potion2 = _interopRequireDefault(_Potion);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -319,25 +324,16 @@
 	      this.player = new _Player2.default(this.game, 100, 100);
 	      this.game.add.existing(this.player);
 
-	      //ei test
-	      // this.egg = new Egg(this.game, 300,100);
-	      // this.game.add.existing(this.egg);
-
-	      //dropper test boven
-	      // this.dropper = new Dropper(this.game, this.game.width+200,10);
-	      // this.game.add.existing(this.dropper);
-
-	      //dropper test jumpobstakel
-	      // this.dropperLow = new Dropper(this.game, this.game.width+400,200);
-	      // this.game.add.existing(this.dropperLow);
-
 	      this.eggGroup = this.game.add.group();
 
 	      this.dropperHighGroup = this.game.add.group();
 	      this.dropperHightimer = this.game.time.events.loop(5000, this.addDropperHigh, this);
 
 	      this.dropperLowGroup = this.game.add.group();
-	      this.dropperLowtimer = this.game.time.events.loop(1000, this.addDropperLow, this);
+	      this.dropperLowtimer = this.game.time.events.loop(7500, this.addDropperLow, this);
+
+	      this.potionGroup = this.game.add.group();
+	      this.potionTimer = this.game.time.events.loop(15000, this.addPotion, this);
 
 	      this.livesText = this.game.add.text(450, 0, "Lives: " + this.player.lives);
 	    }
@@ -348,12 +344,11 @@
 
 	      this.game.physics.arcade.collide(this.kamikaze, this.ground, this.kamikaze.kamikazeDestroy, null, this);
 	      this.game.physics.arcade.collide(this.player, this.ground);
-	      // this.game.physics.arcade.collide(this.ground, this.egg, this.egg.break, null, this);
-	      //this.game.physics.arcade.collide(this.player, this.dropperLow, this.playerDropperHitHandler, null, this);
 
 	      this.game.physics.arcade.collide(this.player, this.dropperLowGroup, this.playerDropperHitHandler, null, this);
 	      this.game.physics.arcade.collide(this.player, this.eggGroup, this.playerEggHitHandler, null, this);
 	      this.game.physics.arcade.collide(this.ground, this.eggGroup, this.eggGroundHandler, null, this);
+	      this.game.physics.arcade.collide(this.player, this.potionGroup, this.playerPotionHitHandler, null, this);
 
 	      this.scoreHandler();
 
@@ -361,54 +356,17 @@
 	        this.game.state.start('Play');
 	      };
 
-	      // let aantal = 0;
-
 	      this.dropperHighGroup.forEach(function (dropper) {
 
-	        console.log(dropper.dropped);
 	        var spelerX = Math.floor(_this2.player.body.x);
 	        var vogelX = Math.floor(dropper.body.x);
-
-	        console.log("speler: " + spelerX + " vogel: " + vogelX);
-
 	        if (vogelX < spelerX + 3 && vogelX > spelerX - 3) {
 	          console.log('1 eitje aub');
 	          _this2.dropEgg(dropper.body.x, dropper.body.y);
 	        };
-
 	        if (dropper.body.x < _this2.player.body.x) {
 	          dropper.dropped = true;
 	        };
-
-	        // this.eiTeller=1;
-	        // // console.log(dropper.body.x);
-	        // // console.log(this.player.body.x);
-	        // // aantal+=1;
-	        // // console.log(aantal);
-
-	        // // console.log('vogel: ' + dropper.body.x + 'Player: ' + this.player.body.x);
-	        // // if (dropper.body.x > this.player.body.x + 10 && dropper.body.x < this.player.body.x - 10) {
-	        // //   console.log('BOVEN SPELER');
-	        // // };
-	        // if ((dropper.body.x < this.player.body.x) && this.dropped==false) {
-	        //   if (this.eiTeller==1) {
-	        //       this.dropped=true;
-	        //     console.log('maak ei');
-	        //     this.dropEgg(dropper.body.x,dropper.body.y);
-	        //   };
-	        //   this.eiTeller-=1;
-	        //   if (this.eiTeller < 0) {
-	        //     this.eiTeller=0;
-	        //   };
-
-	        //  this.dropped=true;
-
-	        //   //console.log('eitje vallen');
-	        //   //console.log(dropped);
-
-	        // };
-
-	        // console.log(this.dropped);
 	      });
 
 	      this.player.body.velocity.x = 0;
@@ -443,11 +401,21 @@
 	  }, {
 	    key: 'playerEggHitHandler',
 	    value: function playerEggHitHandler(player, egg) {
-	      if (egg.body.y > this.player.height - 20) {
+	      //damaged only if egg is still in flight
+	      //broken eggs on the ground do not harm the player
+	      if (egg.body.y < this.player.body.y) {
 	        egg.break();
 	        this.player.hit();
 	        this.livesText.setText("Lives: " + this.player.lives);
 	      };
+	    }
+	  }, {
+	    key: 'playerPotionHitHandler',
+	    value: function playerPotionHitHandler(player, potion) {
+	      this.player.powerUp();
+	      this.player.extraLife();
+	      this.livesText.setText("Lives: " + this.player.lives);
+	      potion.kill();
 	    }
 	  }, {
 	    key: 'eggGroundHandler',
@@ -471,18 +439,21 @@
 	      this.dropperHighGroup.add(dropperHigh);
 	    }
 	  }, {
+	    key: 'addPotion',
+	    value: function addPotion() {
+	      var potion = undefined;
+	      potion = new _Potion2.default(this.game, this.game.width + 128 / 4, 222);
+
+	      this.potionGroup.add(potion);
+	    }
+	  }, {
 	    key: 'dropEgg',
 	    value: function dropEgg(x, y) {
 	      var egg = undefined;
 	      egg = new _Egg2.default(this.game, x, y);
+
 	      this.eggGroup.add(egg);
 	    }
-
-	    // groundHitHandler() {
-	    //   this.groundHitSound.play();
-	    //   this.deathHandler();
-	    // }
-
 	  }, {
 	    key: 'shutdown',
 	    value: function shutdown() {
@@ -629,16 +600,16 @@
 	    _this.game.physics.arcade.enableBody(_this);
 	    _this.body.gravity.y = 400;
 
-	    _this.ducking = false;
+	    //Hitregion: exclude arms
+	    _this.body.setSize(40, 60);
 
-	    //this.game.time.events.add(Phaser.Timer.SECOND, this.powerUp, this);
+	    _this.ducking = false;
 	    return _this;
 	  }
 
 	  _createClass(Player, [{
 	    key: 'update',
 	    value: function update() {
-
 	      if (this.powered == true) {
 	        this.powerHandler();
 	        if (this.lives < 0) {
@@ -652,10 +623,6 @@
 	        this.animations.play('run', 9, true);
 	      }
 	      this.ducking = false;
-
-	      // if (this.powered == true) {
-	      //   this.game.time.events.add(Phaser.Timer.SECOND * 5, this.powerDown , this);
-	      // };
 	    }
 
 	    //powerhandling
@@ -675,11 +642,11 @@
 	  }, {
 	    key: 'powerDown',
 	    value: function powerDown() {
-	      this.powered = false;
-	      this.tint = 0xFFFFFF;
+	      if (this.powered == true) {
+	        this.powered = false;
+	        this.tint = 0xFFFFFF;
+	      };
 	    }
-	    //----------
-
 	  }, {
 	    key: 'jump',
 	    value: function jump() {
@@ -703,6 +670,11 @@
 	        this.lives -= 1;
 	      };
 	      this.powerUp();
+	    }
+	  }, {
+	    key: 'extraLife',
+	    value: function extraLife() {
+	      this.lives += 1;
 	    }
 	  }]);
 
@@ -738,13 +710,10 @@
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Egg).call(this, game, x, y, 'egg', frame));
 
 	    _this.anchor.setTo(0.5, 0.5);
-
 	    _this.animations.add('break', [1, 2, 3, 4]);
-
 	    _this.game.physics.arcade.enableBody(_this);
 	    _this.body.gravity.y = 100;
 	    _this.vermeerder = 1;
-
 	    return _this;
 	  }
 
@@ -752,9 +721,7 @@
 	    key: 'update',
 	    value: function update() {
 	      this.vermeerder += 0.3;
-	      //this.vermeerder*=1.5;
 	      this.angle += this.vermeerder;
-	      //console.log(this.y);
 	    }
 	  }, {
 	    key: 'break',
@@ -764,15 +731,6 @@
 	      var y = this.y;
 
 	      this.animations.play('break', 10, false, true);
-
-	      // this.egg.destroy();
-
-	      // this.egg_dead = this.game.add.sprite(x,y,'egg');
-	      // this.egg_dead.animations.add('break', [1,2,3,4]);
-	      // this.egg_dead.animations.play('break', 35, false);
-
-	      // this.game.physics.arcade.enableBody(this.egg_dead);
-	      // this.egg_dead.body.velocity.x=-200;
 	    }
 	  }]);
 
@@ -790,7 +748,7 @@
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	   value: true
 	});
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -800,53 +758,112 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var Dropper = (function (_Phaser$Sprite) {
-	  _inherits(Dropper, _Phaser$Sprite);
+	   _inherits(Dropper, _Phaser$Sprite);
 
-	  function Dropper(game, x, y, frame) {
-	    _classCallCheck(this, Dropper);
+	   function Dropper(game, x, y, frame) {
+	      _classCallCheck(this, Dropper);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Dropper).call(this, game, x, y, 'dropper', frame)); //score nog meegeven?
+	      var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Dropper).call(this, game, x, y, 'dropper', frame)); //score nog meegeven?
 
-	    _this.animations.add('flap');
-	    _this.animations.play('flap', 10, true);
+	      _this.animations.add('flap');
+	      _this.animations.play('flap', 10, true);
+	      _this.game.physics.arcade.enableBody(_this);
+	      _this.body.setSize(30, 10, 0, 25);
+	      _this.dropped = false;
+	      return _this;
+	   }
 
+	   _createClass(Dropper, [{
+	      key: 'update',
+	      value: function update() {
+	         this.checkWorldBounds = true;
+	         this.body.velocity.x = -200;
+
+	         if (this.body.x < this.game.world.width) {
+	            this.events.onOutOfBounds.add(this.handleScore, this);
+	         };
+	         if (this.body.x < this.game.world.bounds.left - this.width) {
+	            this.destroy();
+	         };
+	      }
+	   }, {
+	      key: 'kill',
+	      value: function kill() {
+	         this.destroy();
+	      }
+	   }, {
+	      key: 'handleScore',
+	      value: function handleScore(score) {
+	         this.game.score++;
+	      }
+	   }]);
+
+	   return Dropper;
+	})(Phaser.Sprite);
+
+	exports.default = Dropper;
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Potion = (function (_Phaser$Sprite) {
+	  _inherits(Potion, _Phaser$Sprite);
+
+	  function Potion(game, x, y, frame) {
+	    _classCallCheck(this, Potion);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Potion).call(this, game, x, y, 'potion', frame));
+
+	    _this.anchor.setTo(0.5, 0.31);
+	    _this.animations.add('shine');
 	    _this.game.physics.arcade.enableBody(_this);
-	    _this.body.setSize(30, 10, 0, 25);
-
-	    _this.dropped = false;
-
+	    _this.body.setSize(20, 20, -2.5, 10);
 	    return _this;
 	  }
 
-	  _createClass(Dropper, [{
+	  _createClass(Potion, [{
 	    key: 'update',
 	    value: function update() {
+	      this.animations.play('shine', 10);
+	      this.body.velocity.x = -100;
 	      this.checkWorldBounds = true;
-	      this.body.velocity.x = -200;
 
-	      if (this.body.x < this.game.world.width) {
-	        this.events.onOutOfBounds.add(this.handleScore, this);
-	      };
 	      if (this.body.x < this.game.world.bounds.left - this.width) {
 	        this.destroy();
 	      };
+	      // this.render();
 	    }
 	  }, {
 	    key: 'kill',
 	    value: function kill() {
 	      this.destroy();
 	    }
-	  }, {
-	    key: 'handleScore',
-	    value: function handleScore(score) {
-	      this.game.score++;
-	    }
+	    // render(){
+	    //   this.game.debug.bodyInfo(this, 32, 32);
+	    //   this.game.debug.body(this);
+	    // }
+
 	  }]);
 
-	  return Dropper;
+	  return Potion;
 	})(Phaser.Sprite);
 
-	exports.default = Dropper;
+	exports.default = Potion;
 
 /***/ }
 /******/ ]);
