@@ -14,8 +14,8 @@ export default class Kamikaze extends Phaser.Sprite {
     this.game.physics.arcade.enableBody(this);
     this.body.setSize(45,20);
   }
+  
   update() {
-
   	this.body.velocity.x = this.kamiX;
   	this.body.velocity.y = 100;
 
@@ -24,7 +24,8 @@ export default class Kamikaze extends Phaser.Sprite {
     };
 
     if (this.body.x < this.game.world.bounds.left - this.width) {
-      this.destroy();
+      this.game.score+=1;
+      this.destroy();;
     } 
   }
 

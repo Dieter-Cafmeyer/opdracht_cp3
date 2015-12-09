@@ -4,7 +4,7 @@ export default class Player extends Phaser.Sprite {
 
     this.powered = false;
 
-    this.lives = 2;
+    this.lives = 3;
 
     this.anchor.setTo(0.5, 0.5);
     this.animations.add('run', [ 1, 2, 3,4]);

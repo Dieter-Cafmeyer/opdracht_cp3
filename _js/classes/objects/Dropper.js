@@ -17,6 +17,7 @@ export default class Dropper extends Phaser.Sprite {
   		this.events.onOutOfBounds.add(this.handleScore,this);
   	};
   	if (this.body.x < this.game.world.bounds.left - this.width) {
+      this.game.score+=1;
   		this.destroy();
   	};
   }

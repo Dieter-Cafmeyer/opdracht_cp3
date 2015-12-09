@@ -325,19 +325,24 @@
 
 	      this.eggGroup = this.game.add.group();
 
+	      this.kamikazeFreq = 9000;
+	      this.dropperHighFreq = 7000;
+	      this.dropperLowFreq = 4000;
+
 	      this.kamikazeGroup = this.game.add.group();
-	      this.kamikazeTimer = this.game.time.events.loop(5000, this.addKamikaze, this);
+	      this.kamikazeTimer = this.game.time.events.loop(this.kamikazeFreq, this.addKamikaze, this);
 
 	      this.dropperHighGroup = this.game.add.group();
-	      this.dropperHightimer = this.game.time.events.loop(5000, this.addDropperHigh, this);
+	      this.dropperHightimer = this.game.time.events.loop(this.dropperHighFreq, this.addDropperHigh, this);
 
 	      this.dropperLowGroup = this.game.add.group();
-	      this.dropperLowtimer = this.game.time.events.loop(7500, this.addDropperLow, this);
+	      this.dropperLowtimer = this.game.time.events.loop(this.dropperLowFreq, this.addDropperLow, this);
 
 	      this.potionGroup = this.game.add.group();
-	      this.potionTimer = this.game.time.events.loop(15000, this.addPotion, this);
+	      this.potionTimer = this.game.time.events.loop(25000, this.addPotion, this);
 
 	      this.livesText = this.game.add.text(450, 0, "Lives: " + this.player.lives);
+	      this.scoreText = this.game.add.text(0, 0, "Score: " + this.game.score);
 	    }
 	  }, {
 	    key: 'update',
@@ -355,16 +360,15 @@
 
 	      this.scoreHandler();
 
-	      if (this.player.lives < 0) {
-	        this.game.state.start('Play');
+	      if (this.player.lives <= 0) {
+	        this.game.state.start('Menu');
 	      };
 
 	      this.dropperHighGroup.forEach(function (dropper) {
 
 	        var spelerX = Math.floor(_this2.player.body.x);
 	        var vogelX = Math.floor(dropper.body.x);
-	        if (vogelX < spelerX + 3 && vogelX > spelerX - 3) {
-	          console.log('1 eitje aub');
+	        if (vogelX < spelerX + 2 && vogelX > spelerX - 2) {
 	          _this2.dropEgg(dropper.body.x, dropper.body.y);
 	        };
 	        if (dropper.body.x < _this2.player.body.x) {
@@ -389,10 +393,14 @@
 	      if (cursors.down.isDown && this.player.body.touching.down) {
 	        this.player.duck();
 	      }
+
+	      this.scoreHandler();
 	    }
 	  }, {
 	    key: 'scoreHandler',
-	    value: function scoreHandler() {}
+	    value: function scoreHandler() {
+	      this.scoreText.setText("Score: " + this.game.score);
+	    }
 	  }, {
 	    key: 'playerDropperHitHandler',
 	    value: function playerDropperHitHandler(player, enemy) {
@@ -571,7 +579,6 @@
 	  _createClass(Kamikaze, [{
 	    key: 'update',
 	    value: function update() {
-
 	      this.body.velocity.x = this.kamiX;
 	      this.body.velocity.y = 100;
 
@@ -580,7 +587,8 @@
 	      };
 
 	      if (this.body.x < this.game.world.bounds.left - this.width) {
-	        this.destroy();
+	        this.game.score += 1;
+	        this.destroy();;
 	      }
 	    }
 	  }, {
@@ -625,7 +633,7 @@
 
 	    _this.powered = false;
 
-	    _this.lives = 2;
+	    _this.lives = 3;
 
 	    _this.anchor.setTo(0.5, 0.5);
 	    _this.animations.add('run', [1, 2, 3, 4]);
@@ -816,6 +824,7 @@
 	            this.events.onOutOfBounds.add(this.handleScore, this);
 	         };
 	         if (this.body.x < this.game.world.bounds.left - this.width) {
+	            this.game.score += 1;
 	            this.destroy();
 	         };
 	      }

@@ -32,19 +32,24 @@ export default class Play extends Phaser.State {
 
     this.eggGroup = this.game.add.group();
 
+    this.kamikazeFreq = 9000;
+    this.dropperHighFreq = 7000;
+    this.dropperLowFreq = 4000;
+
     this.kamikazeGroup = this.game.add.group();
-    this.kamikazeTimer = this.game.time.events.loop(5000, this.addKamikaze, this);
+    this.kamikazeTimer = this.game.time.events.loop(this.kamikazeFreq, this.addKamikaze, this);
 
     this.dropperHighGroup = this.game.add.group();
-    this.dropperHightimer = this.game.time.events.loop(5000, this.addDropperHigh, this);
+    this.dropperHightimer = this.game.time.events.loop(this.dropperHighFreq, this.addDropperHigh, this);
 
     this.dropperLowGroup = this.game.add.group();
-    this.dropperLowtimer = this.game.time.events.loop(7500, this.addDropperLow, this);
+    this.dropperLowtimer = this.game.time.events.loop(this.dropperLowFreq, this.addDropperLow, this);
 
     this.potionGroup = this.game.add.group();
-    this.potionTimer = this.game.time.events.loop(15000, this.addPotion, this);
+    this.potionTimer = this.game.time.events.loop(25000, this.addPotion, this);
 
     this.livesText = this.game.add.text(450, 0, "Lives: " + this.player.lives);
+    this.scoreText = this.game.add.text(0, 0, "Score: " + this.game.score);
   }
   update() {
     this.game.physics.arcade.collide(this.kamikazeGroup, this.ground, this.kamikazeGroundHitHandler, null, this);
@@ -58,16 +63,15 @@ export default class Play extends Phaser.State {
     
     this.scoreHandler();
 
-    if (this.player.lives < 0) {
-      this.game.state.start('Play');
+    if (this.player.lives <= 0) {
+      this.game.state.start('Menu');
     };
 
     this.dropperHighGroup.forEach(dropper =>{
 
       let spelerX = Math.floor(this.player.body.x);
       let vogelX = Math.floor(dropper.body.x);
-      if (vogelX < spelerX+3 && vogelX > spelerX-3) {
-        console.log('1 eitje aub');
+      if (vogelX < spelerX+2 && vogelX > spelerX-2) {
         this.dropEgg(dropper.body.x,dropper.body.y);
       };
       if (dropper.body.x < this.player.body.x) {
@@ -99,10 +103,12 @@ export default class Play extends Phaser.State {
         this.player.duck();
     }
 
+    this.scoreHandler();
+
   }
 
   scoreHandler(){
-    
+    this.scoreText.setText("Score: " + this.game.score);
   }
 
   playerDropperHitHandler(player, enemy){
