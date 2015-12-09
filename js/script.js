@@ -282,7 +282,7 @@
 
 	var _Dropper2 = _interopRequireDefault(_Dropper);
 
-	var _Potion = __webpack_require__(11);
+	var _Potion = __webpack_require__(10);
 
 	var _Potion2 = _interopRequireDefault(_Potion);
 
@@ -407,6 +407,42 @@
 	    key: 'scoreHandler',
 	    value: function scoreHandler() {
 	      this.scoreText.setText("Score: " + this.game.score);
+	      switch (this.game.score) {
+	        case 0:
+	          break;
+	        case 5:
+	          this.kamikazeFreq = 7000;
+	          this.dropperHighFreq = 5000; //5000
+	          this.dropperLowFreq = 3000; //3000;
+	          // this.game.time.events.remove(this.kamikazeTimer);
+	          // this.kamikazeTimer = this.game.time.events.loop(this.kamikazeFreq, this.addKamikaze, this);
+	          this.kamikazeTimer.delay = this.kamikazeFreq;
+	          this.dropperHightimer.delay = this.dropperHighFreq;
+	          this.dropperLowtimer.delay = this.dropperHighFreq;
+
+	          break;
+	        case 10:
+	          this.kamikazeFreq = 5000;
+	          this.dropperHighFreq = 4000; //5000
+	          this.dropperLowFreq = 2000; //3000;
+
+	          this.kamikazeTimer.delay = this.kamikazeFreq;
+	          this.dropperHightimer.delay = this.dropperHighFreq;
+	          this.dropperLowtimer.delay = this.dropperHighFreq;
+
+	          break;
+
+	        case 15:
+	          this.kamikazeFreq = 3000;
+	          this.dropperHighFreq = 3000; //5000
+	          this.dropperLowFreq = 2000; //3000;
+
+	          this.kamikazeTimer.delay = this.kamikazeFreq;
+	          this.dropperHightimer.delay = this.dropperHighFreq;
+	          this.dropperLowtimer.delay = this.dropperHighFreq;
+
+	          break;
+	      }
 	    }
 	  }, {
 	    key: 'playerDropperHitHandler',
@@ -853,8 +889,7 @@
 	exports.default = Dropper;
 
 /***/ },
-/* 10 */,
-/* 11 */
+/* 10 */
 /***/ function(module, exports) {
 
 	'use strict';
