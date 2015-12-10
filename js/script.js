@@ -62,7 +62,7 @@
 
 	var _Play2 = _interopRequireDefault(_Play);
 
-	var _Dead = __webpack_require__(12);
+	var _Dead = __webpack_require__(11);
 
 	var _Dead2 = _interopRequireDefault(_Dead);
 
@@ -169,7 +169,7 @@
 	      this.load.spritesheet('egg', 'assets/egg.png', 30, 30);
 	      this.load.spritesheet('dropper', 'assets/bird2.png', 36, 50);
 	      this.load.spritesheet('potion', 'assets/potion.png', 128 / 4, 36);
-	      this.load.spritesheet('countdown', 'assets/countdown.png', 24, 36);
+	      this.load.spritesheet('countdown', 'assets/countdown.png', 48, 72);
 
 	      //Inladen van de images
 	      this.load.image('startButton', 'assets/start-button.png');
@@ -276,7 +276,7 @@
 
 	var _Dropper2 = _interopRequireDefault(_Dropper);
 
-	var _Potion = __webpack_require__(11);
+	var _Potion = __webpack_require__(10);
 
 	var _Potion2 = _interopRequireDefault(_Potion);
 
@@ -306,6 +306,7 @@
 	      cursors = this.game.input.keyboard.createCursorKeys();
 
 	      this.game.score = 0;
+	      this.controls = false;
 
 	      //background instellen van de start menu + de animatie hiervan
 	      this.background = this.game.add.sprite(0, 0, 'background');
@@ -366,7 +367,11 @@
 	      this.scoreHandler();
 
 	      if (this.player.lives <= 0) {
-	        this.game.state.start('Dead');
+	        this.background.animations.stop();
+	        this.ground.autoScroll(0, 0);
+	        this.controls = false;
+	        this.player.animations.stop();
+	        this.game.time.events.add(Phaser.Timer.SECOND, this.shutdown, this);
 	      };
 
 	      this.dropperHighGroup.forEach(function (dropper) {
@@ -381,22 +386,25 @@
 	        };
 	      });
 
-	      this.player.body.velocity.x = 0;
-	      if (!cursors.down.isDown) {
-	        if (this.player.body.position.x > 0 && cursors.left.isDown) {
-	          this.player.body.velocity.x = -150;
-	        } else if (this.player.body.position.x + this.player.width / 2 < this.game.world.width && cursors.right.isDown) {
-	          this.player.body.velocity.x = 150;
-	        }
-	      };
+	      if (this.controls) {
+	        this.player.body.velocity.x = 0;
+	        if (!cursors.down.isDown) {
+	          if (this.player.body.position.x > 0 && cursors.left.isDown) {
+	            this.player.body.velocity.x = -150;
+	          } else if (this.player.body.position.x + this.player.width / 2 < this.game.world.width && cursors.right.isDown) {
+	            this.player.body.velocity.x = 150;
+	          }
+	        };
 
-	      //  player laten springen als hij de grond raakt
-	      if (cursors.up.isDown && this.player.body.touching.down) {
-	        this.player.jump();
-	      }
-	      // player laten bukken als hij de grond raakt
-	      if (cursors.down.isDown && this.player.body.touching.down) {
-	        this.player.duck();
+	        //  player laten springen als hij de grond raakt
+	        if (cursors.up.isDown && this.player.body.touching.down) {
+	          this.player.jump();
+	        }
+
+	        // player laten bukken als hij de grond raakt
+	        if (cursors.down.isDown && this.player.body.touching.down) {
+	          this.player.duck();
+	        }
 	      }
 
 	      this.scoreHandler();
@@ -530,8 +538,8 @@
 	  }, {
 	    key: 'shutdown',
 	    value: function shutdown() {
-	      // this.bird.destroy();
-
+	      this.player.destroy();
+	      this.game.state.start('Dead');
 	    }
 	  }, {
 	    key: 'countdown',
@@ -546,6 +554,8 @@
 	      this.countdownImage.frame = this.count;
 
 	      if (this.count == -1) {
+	        this.countdownImage.destroy();
+	        this.controls = true;
 	        this.goImage = this.game.add.sprite(this.game.width / 2, 150, 'go');
 	        this.goImage.anchor.setTo(0.5, 0.5);
 	      } else if (this.count <= -2) {
@@ -742,6 +752,19 @@
 	      this.game.time.events.add(Phaser.Timer.SECOND * 5, this.powerDown, this);
 	    }
 	  }, {
+	    key: 'hitHandler',
+	    value: function hitHandler() {
+	      this.powered = true;
+	      this.tint = '0xdb4c4c';
+	      this.game.time.events.add(Phaser.Timer.SECOND / 2, this.hitDown, this);
+	    }
+	  }, {
+	    key: 'hitDown',
+	    value: function hitDown() {
+	      this.tint = 0xFFFFFF;
+	      this.powered = false;
+	    }
+	  }, {
 	    key: 'powerDown',
 	    value: function powerDown() {
 	      if (this.powered == true) {
@@ -769,9 +792,11 @@
 	    key: 'hit',
 	    value: function hit() {
 	      if (this.powered == false) {
+	        this.hitHandler();
 	        this.lives -= 1;
-	      };
-	      this.powerUp();
+	      } else {
+	        return;
+	      }
 	    }
 	  }, {
 	    key: 'extraLife',
@@ -907,8 +932,7 @@
 	exports.default = Dropper;
 
 /***/ },
-/* 10 */,
-/* 11 */
+/* 10 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -970,7 +994,7 @@
 	exports.default = Potion;
 
 /***/ },
-/* 12 */
+/* 11 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -999,12 +1023,12 @@
 	  _createClass(Dead, [{
 	    key: 'create',
 	    value: function create() {
-	      this.game.stage.backgroundColor = '#c58b8b';
+	      this.game.stage.backgroundColor = '#db4c4c';
 
 	      this.title = this.game.add.sprite(this.game.width / 2, 30, 'gameover');
 	      this.title.anchor.setTo(0.5, 0.5);
 
-	      this.scoreText = this.game.add.text(20, 70, "Uw score: 200");
+	      this.scoreText = this.game.add.text(20, 70, "Uw score: " + this.game.score);
 
 	      this.highscoreTitel = this.game.add.text(340, 70, "Highscores");
 

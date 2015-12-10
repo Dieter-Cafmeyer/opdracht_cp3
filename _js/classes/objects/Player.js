@@ -44,12 +44,22 @@ export default class Player extends Phaser.Sprite {
     this.game.time.events.add(Phaser.Timer.SECOND * 5, this.powerDown , this);
   }
 
+  hitHandler(){
+    this.powered = true;
+    this.tint = '0xdb4c4c';
+    this.game.time.events.add(Phaser.Timer.SECOND/2, this.hitDown , this);
+  }
+
+  hitDown(){
+    this.tint = 0xFFFFFF;
+    this.powered = false;
+  }
+
   powerDown() {
     if (this.powered == true) {
       this.powered = false;
       this.tint = 0xFFFFFF;
-    };
-    
+    };  
   }
 
   jump() {
@@ -64,12 +74,16 @@ export default class Player extends Phaser.Sprite {
        this.body.position.x -= 1;
     };
   }
+
   hit(){
     if (this.powered==false) {
+      this.hitHandler();
       this.lives-=1;
-    };
-    this.powerUp();
+    }else{
+      return;
+    }
   }
+
   extraLife(){
     this.lives+=1;
   }

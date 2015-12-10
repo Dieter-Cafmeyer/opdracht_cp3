@@ -1,11 +1,11 @@
 export default class Dead extends Phaser.State {
   create() {
-  	this.game.stage.backgroundColor = '#c58b8b';
+  	this.game.stage.backgroundColor = '#db4c4c';
 
     this.title = this.game.add.sprite(this.game.width/2,30,'gameover');
     this.title.anchor.setTo(0.5,0.5);
 
-    this.scoreText = this.game.add.text(20, 70, "Uw score: 200");
+    this.scoreText = this.game.add.text(20, 70, "Uw score: " + this.game.score);
 
     this.highscoreTitel = this.game.add.text(340, 70, "Highscores");
 

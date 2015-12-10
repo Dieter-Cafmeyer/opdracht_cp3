@@ -12,6 +12,7 @@ export default class Play extends Phaser.State {
     cursors = this.game.input.keyboard.createCursorKeys();
 
     this.game.score = 0;
+    this.controls = false;
 
     //background instellen van de start menu + de animatie hiervan
     this.background = this.game.add.sprite(0,0,'background');
@@ -68,7 +69,11 @@ export default class Play extends Phaser.State {
     this.scoreHandler();
 
     if (this.player.lives <= 0) {
-      this.game.state.start('Dead');
+      this.background.animations.stop();
+      this.ground.autoScroll(0,0);
+      this.controls = false;
+      this.player.animations.stop();
+      this.game.time.events.add(Phaser.Timer.SECOND, this.shutdown , this);
     };
 
     this.dropperHighGroup.forEach(dropper =>{
@@ -84,27 +89,28 @@ export default class Play extends Phaser.State {
 
     });
     
-    this.player.body.velocity.x=0;
-    if (!cursors.down.isDown) {
-        if (this.player.body.position.x > 0 && cursors.left.isDown)
-          {
-            this.player.body.velocity.x = -150;
-          }
-        else if ((this.player.body.position.x + this.player.width/2< this.game.world.width) && cursors.right.isDown)
-          {
-            this.player.body.velocity.x = 150;
-          }
-    };
-    
-    //  player laten springen als hij de grond raakt
-    if (cursors.up.isDown && this.player.body.touching.down)
-    {
-        this.player.jump();
-    }
-    // player laten bukken als hij de grond raakt
-    if (cursors.down.isDown && this.player.body.touching.down)
-    {
-        this.player.duck();
+    if(this.controls){
+      this.player.body.velocity.x=0;
+      if (!cursors.down.isDown) {
+          if (this.player.body.position.x > 0 && cursors.left.isDown)
+            {
+              this.player.body.velocity.x = -150;
+            }
+          else if ((this.player.body.position.x + this.player.width/2< this.game.world.width) && cursors.right.isDown)
+            {
+              this.player.body.velocity.x = 150;
+            }
+      };
+      
+      //  player laten springen als hij de grond raakt
+      if (cursors.up.isDown && this.player.body.touching.down){
+          this.player.jump();
+      }
+
+      // player laten bukken als hij de grond raakt
+      if (cursors.down.isDown && this.player.body.touching.down){
+          this.player.duck();
+      }
     }
 
     this.scoreHandler();
@@ -226,8 +232,8 @@ export default class Play extends Phaser.State {
   }
   
   shutdown() {
-    // this.bird.destroy();
-    
+    this.player.destroy();
+    this.game.state.start('Dead');
   }
 
   countdown() {
@@ -241,6 +247,8 @@ export default class Play extends Phaser.State {
     this.countdownImage.frame = this.count;
 
     if(this.count == -1){
+      this.countdownImage.destroy();
+      this.controls = true;
       this.goImage = this.game.add.sprite(this.game.width/2,150,'go');
       this.goImage.anchor.setTo(0.5, 0.5);
     }else if(this.count <= -2) {
