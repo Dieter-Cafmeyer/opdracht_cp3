@@ -57,7 +57,6 @@ export default class Play extends Phaser.State {
     this.countdownTimer = this.game.time.events.loop(1000, this.countdown, this);
   }
   update() {
-    console.log(this.player.ducking);
     this.game.physics.arcade.collide(this.kamikazeGroup, this.ground, this.kamikazeGroundHitHandler, null, this);
     this.game.physics.arcade.collide(this.player, this.ground);
 
@@ -109,9 +108,8 @@ export default class Play extends Phaser.State {
       }
 
       // player laten bukken als hij de grond raakt
-      if (cursors.down.isDown && this.player.body.touching.down){
+      if (cursors.down.isDown && this.player.body.touching.down && this.game.score > 0){
           this.player.duck();
-          this.player.scoreDown();
       }
     }
     this.scoreHandler();
