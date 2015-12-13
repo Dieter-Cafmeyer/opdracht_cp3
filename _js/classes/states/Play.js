@@ -57,6 +57,7 @@ export default class Play extends Phaser.State {
     this.countdownTimer = this.game.time.events.loop(1000, this.countdown, this);
   }
   update() {
+    console.log(this.player.ducking);
     this.game.physics.arcade.collide(this.kamikazeGroup, this.ground, this.kamikazeGroundHitHandler, null, this);
     this.game.physics.arcade.collide(this.player, this.ground);
 
@@ -110,14 +111,16 @@ export default class Play extends Phaser.State {
       // player laten bukken als hij de grond raakt
       if (cursors.down.isDown && this.player.body.touching.down){
           this.player.duck();
+          this.player.scoreDown();
       }
     }
-
     this.scoreHandler();
 
   }
 
   scoreHandler(){
+    //bukken -score updaten
+    this.game.score= Math.floor(this.game.score);
     this.scoreText.setText("Score: " + this.game.score);
     switch(this.game.score){
       case (0):
@@ -160,15 +163,19 @@ export default class Play extends Phaser.State {
   playerDropperHitHandler(player, enemy){
     enemy.kill();
     //this.dropperLow.kill();
-    this.player.hit();
-    this.livesText.setText("Lives: " + this.player.lives);
+    if (this.player.ducking==false) {
+      this.player.hit();
+      this.livesText.setText("Lives: " + this.player.lives);
+    }
   }
 
   kamikazeHitHandler(player, kamikaze){
     kamikaze.destroy();
     //this.dropperLow.kill();
-    this.player.hit();
-    this.livesText.setText("Lives: " + this.player.lives);
+    if (this.player.ducking==false) {
+      this.player.hit();
+      this.livesText.setText("Lives: " + this.player.lives);
+    }
   }
 
   kamikazeGroundHitHandler(ground, kamikaze){
@@ -180,9 +187,11 @@ export default class Play extends Phaser.State {
     //broken eggs on the ground do not harm the player
     if (egg.body.y < this.player.body.y) {
       egg.break();
-      this.player.hit();
-      this.livesText.setText("Lives: " + this.player.lives);
-    };
+      if (this.player.ducking==false) {
+        this.player.hit();
+        this.livesText.setText("Lives: " + this.player.lives);
+      }
+    }
   }
 
   playerPotionHitHandler(player, potion){

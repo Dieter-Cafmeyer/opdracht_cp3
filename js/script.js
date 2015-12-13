@@ -355,6 +355,7 @@
 	    value: function update() {
 	      var _this2 = this;
 
+	      console.log(this.player.ducking);
 	      this.game.physics.arcade.collide(this.kamikazeGroup, this.ground, this.kamikazeGroundHitHandler, null, this);
 	      this.game.physics.arcade.collide(this.player, this.ground);
 
@@ -404,14 +405,16 @@
 	        // player laten bukken als hij de grond raakt
 	        if (cursors.down.isDown && this.player.body.touching.down) {
 	          this.player.duck();
+	          this.player.scoreDown();
 	        }
 	      }
-
 	      this.scoreHandler();
 	    }
 	  }, {
 	    key: 'scoreHandler',
 	    value: function scoreHandler() {
+	      //bukken -score updaten
+	      this.game.score = Math.floor(this.game.score);
 	      this.scoreText.setText("Score: " + this.game.score);
 	      switch (this.game.score) {
 	        case 0:
@@ -455,16 +458,20 @@
 	    value: function playerDropperHitHandler(player, enemy) {
 	      enemy.kill();
 	      //this.dropperLow.kill();
-	      this.player.hit();
-	      this.livesText.setText("Lives: " + this.player.lives);
+	      if (this.player.ducking == false) {
+	        this.player.hit();
+	        this.livesText.setText("Lives: " + this.player.lives);
+	      }
 	    }
 	  }, {
 	    key: 'kamikazeHitHandler',
 	    value: function kamikazeHitHandler(player, kamikaze) {
 	      kamikaze.destroy();
 	      //this.dropperLow.kill();
-	      this.player.hit();
-	      this.livesText.setText("Lives: " + this.player.lives);
+	      if (this.player.ducking == false) {
+	        this.player.hit();
+	        this.livesText.setText("Lives: " + this.player.lives);
+	      }
 	    }
 	  }, {
 	    key: 'kamikazeGroundHitHandler',
@@ -478,9 +485,11 @@
 	      //broken eggs on the ground do not harm the player
 	      if (egg.body.y < this.player.body.y) {
 	        egg.break();
-	        this.player.hit();
-	        this.livesText.setText("Lives: " + this.player.lives);
-	      };
+	        if (this.player.ducking == false) {
+	          this.player.hit();
+	          this.livesText.setText("Lives: " + this.player.lives);
+	        }
+	      }
 	    }
 	  }, {
 	    key: 'playerPotionHitHandler',
@@ -716,6 +725,8 @@
 	    _this.body.setSize(40, 60);
 
 	    _this.ducking = false;
+
+	    _this.getal = 5;
 	    return _this;
 	  }
 
@@ -734,7 +745,9 @@
 	      } else {
 	        this.animations.play('run', 9, true);
 	      }
-	      this.ducking = false;
+	      if (this.frame != 5) {
+	        this.ducking = false;
+	      }
 	    }
 
 	    //powerhandling
@@ -787,6 +800,19 @@
 	      if (this.body.position.x > 0) {
 	        this.body.position.x -= 1;
 	      };
+	      this.scoreDown();
+	    }
+	  }, {
+	    key: 'scoreDown',
+	    value: function scoreDown() {
+	      this.getal -= 0.2;
+	      if (this.getal < 0) {
+	        this.game.score -= 1;
+	        this.getal = 5;
+	      }
+	      if (this.game.score < 0) {
+	        this.game.score = 0;
+	      }
 	    }
 	  }, {
 	    key: 'hit',
