@@ -171,6 +171,8 @@
 	      this.load.spritesheet('potion', 'assets/potion.png', 128 / 4, 36);
 	      this.load.spritesheet('countdown', 'assets/countdown.png', 48, 72);
 
+	      //this.load.json('json', 'assets/test.json');
+
 	      //Inladen van de images
 	      this.load.image('startButton', 'assets/start-button.png');
 	      this.load.image('ground', 'assets/grond.png');
@@ -255,7 +257,7 @@
 	  }, {
 	    key: 'startClick',
 	    value: function startClick() {
-	      this.game.state.start('Play');
+	      this.game.state.start('Dead');
 	    }
 	  }]);
 
@@ -323,6 +325,14 @@
 	  _createClass(Play, [{
 	    key: 'create',
 	    value: function create() {
+	      //form
+	      var form = document.getElementById('formulier');
+	      form.classList.add('hidden');
+
+	      var button = document.getElementById('submit');
+	      button.classList.add('hidden');
+
+	      //game
 	      cursors = this.game.input.keyboard.createCursorKeys();
 
 	      this.game.score = 0;
@@ -336,10 +346,6 @@
 	      //ground plaatsen en laten bewegen
 	      this.ground = new _Ground2.default(this.game, 0, 245, 560, 44);
 	      this.game.add.existing(this.ground);
-
-	      //testje om kamikaze op het scherm te laten komen
-	      //this.kamikaze = new Kamikaze(this.game, 560, 50);
-	      //this.game.add.existing(this.kamikaze);
 
 	      //player toevoegen
 	      this.player = new _Player2.default(this.game, 100, 100);
@@ -1067,6 +1073,7 @@
 	  _createClass(Dead, [{
 	    key: 'create',
 	    value: function create() {
+	      this.loadItems();
 	      this.game.stage.backgroundColor = '#db4c4c';
 
 	      this.title = this.game.add.sprite(this.game.width / 2, 30, 'gameover');
@@ -1078,11 +1085,55 @@
 
 	      this.startButton = this.game.add.button(100, 220, 'restartButton', this.startClick, this);
 	      this.startButton.anchor.setTo(0.5, 0.5);
+
+	      //Form
+	      var form = document.getElementById('formulier');
+	      form.classList.remove('hidden');
+
+	      var button = document.getElementById('submit');
+	      button.classList.remove('hidden');
+
+	      //var phaserJSON = this.game.cache.getJSON('json');
+
+	      form.addEventListener('submit', this.highScoreHandler);
 	    }
 	  }, {
 	    key: 'startClick',
 	    value: function startClick() {
 	      this.game.state.start('Play');
+	    }
+	  }, {
+	    key: 'highScoreHandler',
+	    value: function highScoreHandler(e) {
+	      e.preventDefault();
+	      var button = document.getElementById('submit');
+	      button.classList.add('hidden');
+	    }
+	  }, {
+	    key: 'loadItems',
+	    value: function loadItems() {
+	      var req = new XMLHttpRequest();
+	      req.responseType = 'json';
+	      req.onload = function () {
+	        var sorted = req.response.sort(function (a, b) {
+	          return parseFloat(b.score) - parseFloat(a.score);
+	        });
+
+	        var scoreEl = document.getElementById('highscores');
+	        var resultHTML = '<ol>';
+
+	        for (var i = 0; i <= 4; i++) {
+	          resultHTML += '<li>' + sorted[i].name + ': <b>' + sorted[i].score + '</b></li>';
+	        }
+
+	        resultHTML += '</ol>';
+	        scoreEl.innerHTML = resultHTML;
+	      };
+
+	      var url = '../../../assets/test.json';
+	      req.open('get', url, true);
+	      req.setRequestHeader('X_REQUESTED_WITH', 'xmlhttprequest');
+	      req.send();
 	    }
 	  }]);
 

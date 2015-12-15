@@ -31,6 +31,6 @@ export default class Menu extends Phaser.State {
     this.startButton.anchor.setTo(0.5,0.5);
   }
   startClick() {
-    this.game.state.start('Play');
+    this.game.state.start('Dead');
   }
 }

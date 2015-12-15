@@ -9,6 +9,14 @@ let cursors;
 let x = 0;
 export default class Play extends Phaser.State {
   create() {
+    //form
+    var form = document.getElementById('formulier');
+    form.classList.add('hidden');  
+
+    var button = document.getElementById('submit');
+    button.classList.add('hidden');
+
+    //game
     cursors = this.game.input.keyboard.createCursorKeys();
 
     this.game.score = 0;
@@ -22,10 +30,6 @@ export default class Play extends Phaser.State {
     //ground plaatsen en laten bewegen
     this.ground = new Ground(this.game, 0, 245, 560, 44);
     this.game.add.existing(this.ground);
-
-    //testje om kamikaze op het scherm te laten komen
-    //this.kamikaze = new Kamikaze(this.game, 560, 50);
-    //this.game.add.existing(this.kamikaze);
 
     //player toevoegen
     this.player = new Player(this.game, 100,100);
