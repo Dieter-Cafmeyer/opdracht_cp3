@@ -8,6 +8,7 @@ export default class Potion extends Phaser.Sprite {
     this.game.physics.arcade.enableBody(this);
     this.body.setSize(20,20,-2.5,10);
   }
+
   update() {
     this.animations.play('shine', 10);
     this.body.velocity.x = -100;
@@ -16,13 +17,9 @@ export default class Potion extends Phaser.Sprite {
     if (this.body.x < this.game.world.bounds.left - this.width) {
       this.destroy();
     };
-    // this.render();
   }
+
   kill(){
     this.destroy();
   }
-  // render(){
-  //   this.game.debug.bodyInfo(this, 32, 32);
-  //   this.game.debug.body(this);
-  // }
 }

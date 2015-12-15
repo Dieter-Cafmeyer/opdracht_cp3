@@ -1,0 +1,34 @@
+form{
+	position: absolute;
+	top: 120px;
+	left: 30px;
+}
+
+input {
+	display: block;
+}
+
+#submit {
+	border: none;
+	width: 80px;
+	height: 30px;
+	background-color: white;
+	font-size: .7em;
+	cursor: pointer;
+}
+
+.name {
+	height: 20px;
+	width: 240px;
+	margin-bottom: 5px;
+}
+
+.hidden{
+	visibility: hidden;
+}
+
+ul{
+	position: absolute;
+	top: 100px;
+	left: 280px;
+}

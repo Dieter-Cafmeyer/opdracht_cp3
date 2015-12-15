@@ -9,9 +9,21 @@ let cursors;
 let x = 0;
 export default class Play extends Phaser.State {
   create() {
+    //form
+    var form = document.getElementById('formulier');
+    form.classList.add('hidden');  
+
+    var button = document.getElementById('submit');
+    button.classList.add('hidden');
+
+    var ul = document.getElementById('highscores');
+    ul.classList.add('hidden');  
+
+    //game
     cursors = this.game.input.keyboard.createCursorKeys();
 
     this.game.score = 0;
+    this.controls = false;
 
     //background instellen van de start menu + de animatie hiervan
     this.background = this.game.add.sprite(0,0,'background');
@@ -21,10 +33,6 @@ export default class Play extends Phaser.State {
     //ground plaatsen en laten bewegen
     this.ground = new Ground(this.game, 0, 245, 560, 44);
     this.game.add.existing(this.ground);
-
-    //testje om kamikaze op het scherm te laten komen
-    //this.kamikaze = new Kamikaze(this.game, 560, 50);
-    //this.game.add.existing(this.kamikaze);
 
     //player toevoegen
     this.player = new Player(this.game, 100,100);
@@ -50,6 +58,12 @@ export default class Play extends Phaser.State {
 
     this.livesText = this.game.add.text(450, 0, "Lives: " + this.player.lives);
     this.scoreText = this.game.add.text(0, 0, "Score: " + this.game.score);
+    
+    this.count = 3;
+    
+    this.musicTimer = this.game.time.events.add(4000, this.musicTime, this);
+
+    this.countdownTimer = this.game.time.events.loop(1000, this.countdown, this);
   }
   update() {
     this.game.physics.arcade.collide(this.kamikazeGroup, this.ground, this.kamikazeGroundHitHandler, null, this);
@@ -64,7 +78,11 @@ export default class Play extends Phaser.State {
     this.scoreHandler();
 
     if (this.player.lives <= 0) {
-      this.game.state.start('Menu');
+      this.background.animations.stop();
+      this.ground.autoScroll(0,0);
+      this.controls = false;
+      this.player.animations.stop();
+      this.game.time.events.add(Phaser.Timer.SECOND, this.shutdown , this);
     };
 
     this.dropperHighGroup.forEach(dropper =>{
@@ -80,49 +98,113 @@ export default class Play extends Phaser.State {
 
     });
     
-    this.player.body.velocity.x=0;
-    if (!cursors.down.isDown) {
-        if (this.player.body.position.x > 0 && cursors.left.isDown)
-          {
-            this.player.body.velocity.x = -150;
-          }
-        else if ((this.player.body.position.x + this.player.width/2< this.game.world.width) && cursors.right.isDown)
-          {
-            this.player.body.velocity.x = 150;
-          }
-    };
-    
-    //  player laten springen als hij de grond raakt
-    if (cursors.up.isDown && this.player.body.touching.down)
-    {
-        this.player.jump();
-    }
-    // player laten bukken als hij de grond raakt
-    if (cursors.down.isDown && this.player.body.touching.down)
-    {
-        this.player.duck();
-    }
+    if(this.controls){
+      this.player.body.velocity.x=0;
+      if (!cursors.down.isDown) {
+          if (this.player.body.position.x > 0 && cursors.left.isDown)
+            {
+              this.player.body.velocity.x = -150;
+            }
+          else if ((this.player.body.position.x + this.player.width/2< this.game.world.width) && cursors.right.isDown)
+            {
+              this.player.body.velocity.x = 150;
+            }
+      };
+      
+      //  player laten springen als hij de grond raakt
+      if (cursors.up.isDown && this.player.body.touching.down){
+          this.player.jump();
+      }
 
+      // player laten bukken als hij de grond raakt
+      if (cursors.down.isDown && this.player.body.touching.down && this.game.score > 0){
+          this.player.duck();
+      }
+    }
     this.scoreHandler();
 
   }
 
   scoreHandler(){
+    //bukken -score updaten
+    this.game.score= Math.floor(this.game.score);
     this.scoreText.setText("Score: " + this.game.score);
+    switch(this.game.score){
+      case (0):
+        break;
+      case (5):
+        this.kamikazeFreq = 7000;
+        this.dropperHighFreq = 5000;  //5000
+        this.dropperLowFreq = 3000; //3000;
+        // this.game.time.events.remove(this.kamikazeTimer);
+        // this.kamikazeTimer = this.game.time.events.loop(this.kamikazeFreq, this.addKamikaze, this);
+        this.kamikazeTimer.delay = this.kamikazeFreq;
+        this.dropperHightimer.delay = this.dropperHighFreq;
+        this.dropperLowtimer.delay = this.dropperHighFreq;
+
+        break;
+      case (10):
+        this.kamikazeFreq = 6500;
+        this.dropperHighFreq = 4775;  //5000
+        this.dropperLowFreq = 2333; //3000;
+
+        this.kamikazeTimer.delay = this.kamikazeFreq;
+        this.dropperHightimer.delay = this.dropperHighFreq;
+        this.dropperLowtimer.delay = this.dropperHighFreq;
+
+        break;
+
+      case (15):
+        this.kamikazeFreq = 6000;
+        this.dropperHighFreq = 3200;  //5000
+        this.dropperLowFreq = 1998; //3000;
+
+        this.kamikazeTimer.delay = this.kamikazeFreq;
+        this.dropperHightimer.delay = this.dropperHighFreq;
+        this.dropperLowtimer.delay = this.dropperHighFreq;
+
+        break;
+
+      case (30):
+        this.kamikazeFreq = 4000;
+        this.dropperHighFreq = 2500;  //5000
+        this.dropperLowFreq = 1000; //3000;
+
+        this.kamikazeTimer.delay = this.kamikazeFreq;
+        this.dropperHightimer.delay = this.dropperHighFreq;
+        this.dropperLowtimer.delay = this.dropperHighFreq;
+
+        break;
+
+      case (80):
+        this.kamikazeFreq = 1000;
+        this.dropperHighFreq = 2500;  //5000
+        this.dropperLowFreq = 1000; //3000;
+
+        this.kamikazeTimer.delay = this.kamikazeFreq;
+        this.dropperHightimer.delay = this.dropperHighFreq;
+        this.dropperLowtimer.delay = this.dropperHighFreq;
+
+        break;
+    }
   }
 
   playerDropperHitHandler(player, enemy){
     enemy.kill();
     //this.dropperLow.kill();
-    this.player.hit();
-    this.livesText.setText("Lives: " + this.player.lives);
+    if (this.player.ducking==false) {
+      this.player.hit();
+      this.livesText.setText("Lives: " + this.player.lives);
+    }
   }
 
   kamikazeHitHandler(player, kamikaze){
     kamikaze.destroy();
     //this.dropperLow.kill();
-    this.player.hit();
-    this.livesText.setText("Lives: " + this.player.lives);
+    if (this.player.ducking==false) {
+      this.player.hit();
+      this.livesText.setText("Lives: " + this.player.lives);
+    }
   }
 
   kamikazeGroundHitHandler(ground, kamikaze){
@@ -130,13 +212,13 @@ export default class Play extends Phaser.State {
   }
 
   playerEggHitHandler(player, egg){
-    //damaged only if egg is still in flight
-    //broken eggs on the ground do not harm the player
     if (egg.body.y < this.player.body.y) {
       egg.break();
-      this.player.hit();
-      this.livesText.setText("Lives: " + this.player.lives);
-    };
+      if (this.player.ducking==false) {
+        this.player.hit();
+        this.livesText.setText("Lives: " + this.player.lives);
+      }
+    }
   }
 
   playerPotionHitHandler(player, potion){
@@ -158,6 +240,9 @@ export default class Play extends Phaser.State {
   }
 
   addKamikaze(){
+    this.rooster = this.game.add.audio('rooster');
+    this.rooster.play();
+    
     let kamikaze;
     kamikaze = new Kamikaze(this.game, 560, 50);
 
@@ -186,7 +271,40 @@ export default class Play extends Phaser.State {
   }
   
   shutdown() {
-    // this.bird.destroy();
-    
+    this.player.destroy();
+    this.game.state.start('Dead');
+    this.scoreSound.stop();
+  }
+
+  musicTime() {
+    this.scoreSound = this.game.add.audio('back_sound');
+    this.scoreSound.loopFull(0.6);
+    return
+  }
+
+  countdown() {
+    if(this.countdownImage){
+      this.countdownImage.kill();
+    }
+    this.count--;
+
+    this.countdownImage = this.game.add.sprite(this.game.width/2,150,'countdown');
+    this.countdownImage.anchor.setTo(0.5, 0.5);
+    this.countdownImage.frame = this.count;
+
+    this.timerSound = this.game.add.audio('countdownSound');
+    this.timerSound.play();
+
+    if(this.count == -1){
+      this.countdownImage.destroy();
+      this.timerSound.stop();
+      this.controls = true;
+      this.goImage = this.game.add.sprite(this.game.width/2,150,'go');
+      this.goImage.anchor.setTo(0.5, 0.5);
+    }else if(this.count <= -2) {
+      this.goImage.destroy();
+      this.countdownImage.destroy();
+      this.timerSound.stop();
+    }
   }
 }
