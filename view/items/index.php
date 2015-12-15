@@ -1,9 +1,9 @@
-<form action="post" class="hidden" id="formulier">
-  <input type="text" class="name">
+<form action="index.php" method="post" class="hidden" id="formulier">
+  <input type="text" class="name" name="title">
   <input type="submit" value="Delen" id="submit">
 </form>
 
-<ul id="highscores">
+<ul id="highscores" class="hidden">
 </ul>
 
 <script src="js/vendors/phaser.min.js"></script>

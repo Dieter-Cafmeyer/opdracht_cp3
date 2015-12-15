@@ -16,6 +16,9 @@ export default class Play extends Phaser.State {
     var button = document.getElementById('submit');
     button.classList.add('hidden');
 
+    var ul = document.getElementById('highscores');
+    ul.classList.add('hidden');  
+
     //game
     cursors = this.game.input.keyboard.createCursorKeys();
 
@@ -57,6 +60,8 @@ export default class Play extends Phaser.State {
     this.scoreText = this.game.add.text(0, 0, "Score: " + this.game.score);
     
     this.count = 3;
+    
+    this.musicTimer = this.game.time.events.add(4000, this.musicTime, this);
 
     this.countdownTimer = this.game.time.events.loop(1000, this.countdown, this);
   }
@@ -215,6 +220,9 @@ export default class Play extends Phaser.State {
   }
 
   addKamikaze(){
+    this.rooster = this.game.add.audio('rooster');
+    this.rooster.play();
+    
     let kamikaze;
     kamikaze = new Kamikaze(this.game, 560, 50);
 
@@ -245,6 +253,13 @@ export default class Play extends Phaser.State {
   shutdown() {
     this.player.destroy();
     this.game.state.start('Dead');
+    this.scoreSound.stop();
+  }
+
+  musicTime() {
+    this.scoreSound = this.game.add.audio('back_sound');
+    this.scoreSound.loopFull(0.6);
+    return
   }
 
   countdown() {
@@ -257,14 +272,19 @@ export default class Play extends Phaser.State {
     this.countdownImage.anchor.setTo(0.5, 0.5);
     this.countdownImage.frame = this.count;
 
+    this.timerSound = this.game.add.audio('countdownSound');
+    this.timerSound.play();
+
     if(this.count == -1){
       this.countdownImage.destroy();
+      this.timerSound.stop();
       this.controls = true;
       this.goImage = this.game.add.sprite(this.game.width/2,150,'go');
       this.goImage.anchor.setTo(0.5, 0.5);
     }else if(this.count <= -2) {
       this.goImage.destroy();
       this.countdownImage.destroy();
+      this.timerSound.stop();
     }
   }
 }

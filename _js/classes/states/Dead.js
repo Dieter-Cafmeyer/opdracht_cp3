@@ -1,5 +1,12 @@
 export default class Dead extends Phaser.State {
   create() {
+    this.itemAddForm;
+
+    this.itemAddForm = document.getElementById('formulier');
+    if(this.itemAddForm) {
+      this.initItemAddForm();
+    }
+
     this.loadItems();
   	this.game.stage.backgroundColor = '#db4c4c';
 
@@ -17,30 +24,33 @@ export default class Dead extends Phaser.State {
     var form = document.getElementById('formulier');
     form.classList.remove('hidden');  
 
+    var ul = document.getElementById('highscores');
+    ul.classList.remove('hidden');  
+
     var button = document.getElementById('submit');
     button.classList.remove('hidden');
 
     //var phaserJSON = this.game.cache.getJSON('json');
-
-    form.addEventListener('submit', this.highScoreHandler);
+    
   }
 
-  startClick() {
-    this.game.state.start('Play');
-  }
-
-  highScoreHandler(e){
-    e.preventDefault();
+  initItemAddForm() {
+    this.itemAddForm.addEventListener('submit', this.submitItemAddForm);
     var button = document.getElementById('submit');
     button.classList.add('hidden');
 
+
+  };
+
+  startClick() {
+    this.game.state.start('Play');
   }
 
   loadItems(){
     let req = new XMLHttpRequest();
     req.responseType = 'json';
     req.onload = () => {
-      let sorted = req.response.sort(function(a, b){
+      this.sorted = req.response.sort(function(a, b){
         return parseFloat(b.score) - parseFloat(a.score);
       });
 
@@ -48,8 +58,10 @@ export default class Dead extends Phaser.State {
       let resultHTML = '<ol>';
       
       for(var i=0; i<=4; i++){
-        resultHTML+= `<li>${sorted[i].name}: <b>${sorted[i].score}</b></li>`;
+        resultHTML+= `<li>${this.sorted[i].name}: <b>${this.sorted[i].score}</b></li>`;
       }
+
+      this.gesorteerd = this.sorted;
       
       resultHTML += '</ol>';
       scoreEl.innerHTML = resultHTML;
@@ -59,5 +71,28 @@ export default class Dead extends Phaser.State {
     req.open('get', url, true);
     req.setRequestHeader('X_REQUESTED_WITH', 'xmlhttprequest');
     req.send();
+  }
+
+  submitItemAddForm(e) {
+    console.log(this.itemAddForm);
+    e.preventDefault();
+
+    let req = new XMLHttpRequest();
+    req.responseType = 'json';
+    req.onload = () => {
+      if(req.response.result === 'ok') {
+        //clear form input
+        this.itemAddForm.querySelector('[name="title"]').value = '';
+        //reload items with AJAX request
+        this.loadItems();
+      } else {
+        //TODO: don't use alert function, but render errors in HTML
+        alert('test');
+      }
+    };
+    let url = `${this.itemAddForm.getAttribute('action')}?t=${Date.now()}`;
+    req.open('post', url, true);
+    req.setRequestHeader('X_REQUESTED_WITH', 'xmlhttprequest');
+    req.send(new FormData(this.itemAddForm));
   }
 }

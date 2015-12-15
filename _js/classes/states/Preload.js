@@ -16,6 +16,9 @@ export default class Preload extends Phaser.State {
     this.load.spritesheet('countdown', 'assets/countdown.png', 48,72);
 
     //this.load.json('json', 'assets/test.json');
+    this.load.audio('back_sound', 'assets/bird_sound.mp3');
+    this.load.audio('rooster', 'assets/rooster.mp3');
+    this.load.audio('countdownSound', 'assets/timer.mp3');
     
 	//Inladen van de images
     this.load.image('startButton', 'assets/start-button.png');

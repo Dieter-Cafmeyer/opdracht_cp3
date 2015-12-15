@@ -172,6 +172,9 @@
 	      this.load.spritesheet('countdown', 'assets/countdown.png', 48, 72);
 
 	      //this.load.json('json', 'assets/test.json');
+	      this.load.audio('back_sound', 'assets/bird_sound.mp3');
+	      this.load.audio('rooster', 'assets/rooster.mp3');
+	      this.load.audio('countdownSound', 'assets/timer.mp3');
 
 	      //Inladen van de images
 	      this.load.image('startButton', 'assets/start-button.png');
@@ -332,6 +335,9 @@
 	      var button = document.getElementById('submit');
 	      button.classList.add('hidden');
 
+	      var ul = document.getElementById('highscores');
+	      ul.classList.add('hidden');
+
 	      //game
 	      cursors = this.game.input.keyboard.createCursorKeys();
 
@@ -373,6 +379,8 @@
 	      this.scoreText = this.game.add.text(0, 0, "Score: " + this.game.score);
 
 	      this.count = 3;
+
+	      this.musicTimer = this.game.time.events.add(4000, this.musicTime, this);
 
 	      this.countdownTimer = this.game.time.events.loop(1000, this.countdown, this);
 	    }
@@ -539,6 +547,9 @@
 	  }, {
 	    key: 'addKamikaze',
 	    value: function addKamikaze() {
+	      this.rooster = this.game.add.audio('rooster');
+	      this.rooster.play();
+
 	      var kamikaze = undefined;
 	      kamikaze = new _Kamikaze2.default(this.game, 560, 50);
 
@@ -573,6 +584,14 @@
 	    value: function shutdown() {
 	      this.player.destroy();
 	      this.game.state.start('Dead');
+	      this.scoreSound.stop();
+	    }
+	  }, {
+	    key: 'musicTime',
+	    value: function musicTime() {
+	      this.scoreSound = this.game.add.audio('back_sound');
+	      this.scoreSound.loopFull(0.6);
+	      return;
 	    }
 	  }, {
 	    key: 'countdown',
@@ -586,14 +605,19 @@
 	      this.countdownImage.anchor.setTo(0.5, 0.5);
 	      this.countdownImage.frame = this.count;
 
+	      this.timerSound = this.game.add.audio('countdownSound');
+	      this.timerSound.play();
+
 	      if (this.count == -1) {
 	        this.countdownImage.destroy();
+	        this.timerSound.stop();
 	        this.controls = true;
 	        this.goImage = this.game.add.sprite(this.game.width / 2, 150, 'go');
 	        this.goImage.anchor.setTo(0.5, 0.5);
 	      } else if (this.count <= -2) {
 	        this.goImage.destroy();
 	        this.countdownImage.destroy();
+	        this.timerSound.stop();
 	      }
 	    }
 	  }]);
@@ -1073,6 +1097,13 @@
 	  _createClass(Dead, [{
 	    key: 'create',
 	    value: function create() {
+	      this.itemAddForm;
+
+	      this.itemAddForm = document.getElementById('formulier');
+	      if (this.itemAddForm) {
+	        this.initItemAddForm();
+	      }
+
 	      this.loadItems();
 	      this.game.stage.backgroundColor = '#db4c4c';
 
@@ -1090,12 +1121,20 @@
 	      var form = document.getElementById('formulier');
 	      form.classList.remove('hidden');
 
+	      var ul = document.getElementById('highscores');
+	      ul.classList.remove('hidden');
+
 	      var button = document.getElementById('submit');
 	      button.classList.remove('hidden');
 
 	      //var phaserJSON = this.game.cache.getJSON('json');
-
-	      form.addEventListener('submit', this.highScoreHandler);
+	    }
+	  }, {
+	    key: 'initItemAddForm',
+	    value: function initItemAddForm() {
+	      this.itemAddForm.addEventListener('submit', this.submitItemAddForm);
+	      var button = document.getElementById('submit');
+	      button.classList.add('hidden');
 	    }
 	  }, {
 	    key: 'startClick',
@@ -1103,19 +1142,14 @@
 	      this.game.state.start('Play');
 	    }
 	  }, {
-	    key: 'highScoreHandler',
-	    value: function highScoreHandler(e) {
-	      e.preventDefault();
-	      var button = document.getElementById('submit');
-	      button.classList.add('hidden');
-	    }
-	  }, {
 	    key: 'loadItems',
 	    value: function loadItems() {
+	      var _this2 = this;
+
 	      var req = new XMLHttpRequest();
 	      req.responseType = 'json';
 	      req.onload = function () {
-	        var sorted = req.response.sort(function (a, b) {
+	        _this2.sorted = req.response.sort(function (a, b) {
 	          return parseFloat(b.score) - parseFloat(a.score);
 	        });
 
@@ -1123,8 +1157,10 @@
 	        var resultHTML = '<ol>';
 
 	        for (var i = 0; i <= 4; i++) {
-	          resultHTML += '<li>' + sorted[i].name + ': <b>' + sorted[i].score + '</b></li>';
+	          resultHTML += '<li>' + _this2.sorted[i].name + ': <b>' + _this2.sorted[i].score + '</b></li>';
 	        }
+
+	        _this2.gesorteerd = _this2.sorted;
 
 	        resultHTML += '</ol>';
 	        scoreEl.innerHTML = resultHTML;
@@ -1134,6 +1170,32 @@
 	      req.open('get', url, true);
 	      req.setRequestHeader('X_REQUESTED_WITH', 'xmlhttprequest');
 	      req.send();
+	    }
+	  }, {
+	    key: 'submitItemAddForm',
+	    value: function submitItemAddForm(e) {
+	      var _this3 = this;
+
+	      console.log(this.itemAddForm);
+	      e.preventDefault();
+
+	      var req = new XMLHttpRequest();
+	      req.responseType = 'json';
+	      req.onload = function () {
+	        if (req.response.result === 'ok') {
+	          //clear form input
+	          _this3.itemAddForm.querySelector('[name="title"]').value = '';
+	          //reload items with AJAX request
+	          _this3.loadItems();
+	        } else {
+	          //TODO: don't use alert function, but render errors in HTML
+	          alert('test');
+	        }
+	      };
+	      var url = this.itemAddForm.getAttribute('action') + '?t=' + Date.now();
+	      req.open('post', url, true);
+	      req.setRequestHeader('X_REQUESTED_WITH', 'xmlhttprequest');
+	      req.send(new FormData(this.itemAddForm));
 	    }
 	  }]);
 
