@@ -190,8 +190,6 @@ export default class Play extends Phaser.State {
   }
 
   playerEggHitHandler(player, egg){
-    //damaged only if egg is still in flight
-    //broken eggs on the ground do not harm the player
     if (egg.body.y < this.player.body.y) {
       egg.break();
       if (this.player.ducking==false) {

@@ -29,9 +29,6 @@ export default class Dead extends Phaser.State {
 
     var button = document.getElementById('submit');
     button.classList.remove('hidden');
-
-    //var phaserJSON = this.game.cache.getJSON('json');
-    
   }
 
   initItemAddForm() {

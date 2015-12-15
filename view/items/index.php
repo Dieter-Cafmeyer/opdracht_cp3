@@ -1,6 +1,6 @@
 <form action="index.php" method="post" class="hidden" id="formulier">
   <input type="text" class="name" name="title">
-  <input type="submit" value="Delen" id="submit">
+  <input type="submit" value="Delen" id="submit" disabled>
 </form>
 
 <ul id="highscores" class="hidden">

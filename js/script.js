@@ -260,7 +260,7 @@
 	  }, {
 	    key: 'startClick',
 	    value: function startClick() {
-	      this.game.state.start('Dead');
+	      this.game.state.start('Play');
 	    }
 	  }]);
 
@@ -513,8 +513,6 @@
 	  }, {
 	    key: 'playerEggHitHandler',
 	    value: function playerEggHitHandler(player, egg) {
-	      //damaged only if egg is still in flight
-	      //broken eggs on the ground do not harm the player
 	      if (egg.body.y < this.player.body.y) {
 	        egg.break();
 	        if (this.player.ducking == false) {
@@ -1048,18 +1046,12 @@
 	      if (this.body.x < this.game.world.bounds.left - this.width) {
 	        this.destroy();
 	      };
-	      // this.render();
 	    }
 	  }, {
 	    key: 'kill',
 	    value: function kill() {
 	      this.destroy();
 	    }
-	    // render(){
-	    //   this.game.debug.bodyInfo(this, 32, 32);
-	    //   this.game.debug.body(this);
-	    // }
-
 	  }]);
 
 	  return Potion;
@@ -1126,8 +1118,6 @@
 
 	      var button = document.getElementById('submit');
 	      button.classList.remove('hidden');
-
-	      //var phaserJSON = this.game.cache.getJSON('json');
 	    }
 	  }, {
 	    key: 'initItemAddForm',
