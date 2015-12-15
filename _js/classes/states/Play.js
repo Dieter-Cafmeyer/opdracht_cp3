@@ -144,9 +144,9 @@ export default class Play extends Phaser.State {
 
         break;
       case (10):
-        this.kamikazeFreq = 5000;
-        this.dropperHighFreq = 4000;  //5000
-        this.dropperLowFreq = 2000; //3000;
+        this.kamikazeFreq = 6500;
+        this.dropperHighFreq = 4775;  //5000
+        this.dropperLowFreq = 2333; //3000;
 
         this.kamikazeTimer.delay = this.kamikazeFreq;
         this.dropperHightimer.delay = this.dropperHighFreq;
@@ -155,9 +155,31 @@ export default class Play extends Phaser.State {
         break;
 
       case (15):
-        this.kamikazeFreq = 3000;
-        this.dropperHighFreq = 3000;  //5000
-        this.dropperLowFreq = 2000; //3000;
+        this.kamikazeFreq = 6000;
+        this.dropperHighFreq = 3200;  //5000
+        this.dropperLowFreq = 1998; //3000;
+
+        this.kamikazeTimer.delay = this.kamikazeFreq;
+        this.dropperHightimer.delay = this.dropperHighFreq;
+        this.dropperLowtimer.delay = this.dropperHighFreq;
+
+        break;
+
+      case (30):
+        this.kamikazeFreq = 4000;
+        this.dropperHighFreq = 2500;  //5000
+        this.dropperLowFreq = 1000; //3000;
+
+        this.kamikazeTimer.delay = this.kamikazeFreq;
+        this.dropperHightimer.delay = this.dropperHighFreq;
+        this.dropperLowtimer.delay = this.dropperHighFreq;
+
+        break;
+
+      case (80):
+        this.kamikazeFreq = 1000;
+        this.dropperHighFreq = 2500;  //5000
+        this.dropperLowFreq = 1000; //3000;
 
         this.kamikazeTimer.delay = this.kamikazeFreq;
         this.dropperHightimer.delay = this.dropperHighFreq;
